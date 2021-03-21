@@ -21,6 +21,7 @@ Plug 'josa42/coc-sh', {'do': 'yarn install --frozen-lockfile'}
 Plug 'fannheyward/coc-xml', {'do': 'yarn install --frozen-lockfile'}
 Plug 'neoclide/coc-html', {'do': 'yarn install --frozen-lockfile'}
 Plug 'neoclide/coc-css', {'do': 'yarn install --frozen-lockfile'}
+Plug 'fannheyward/coc-texlab', {'do': 'yarn install --frozen-lockfile'}
 
 call plug#end()
 
@@ -78,11 +79,6 @@ noremap <RightDrag> <LeftDrag>
 let g:vimspector_enable_mappings = 'HUMAN'
 "packadd! vimspector
 
-"vim-visual-multi:
-let g:VM_mouse_mappings = 1
-nmap   <C-LeftMouse>         <Plug>(VM-Mouse-Cursor)
-nmap   <C-RightMouse>        <Plug>(VM-Mouse-Word)  
-nmap   <M-C-RightMouse>      <Plug>(VM-Mouse-Column)
 
 "Nerd Tree:
 autocmd VimEnter * NERDTree | wincmd p
@@ -96,6 +92,9 @@ autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_
 autocmd BufEnter NERD_tree_* | execute 'normal R'
 
 "Coc:
+
+"in case VimPlug not working
+"let g:coc_global_extensions = ['coc-tsserver', 'coc-clangd', 'coc-cmake', 'coc-json', 'coc-python', 'coc-sh', 'coc-xml', 'coc-html', 'coc-css', 'coc-texlab']
 
 " Don't pass messages to |ins-completion-menu|.
 set shortmess+=c
