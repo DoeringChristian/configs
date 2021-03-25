@@ -11,6 +11,7 @@ Plug 'preservim/nerdtree'
 Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-dispatch'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'severin-lemaignan/vim-minimap'
 
 "coc extensions:
 Plug 'neoclide/coc-tsserver', {'do': 'yarn install --frozen-lockfile'}
@@ -74,6 +75,9 @@ noremap <RightDrag> <LeftDrag>
 ""smart bracket:
 "inoremap <expr> ; strpart(getline('.'), col('.')-1, 1) == ")" ? "\<Right>;" : ";"
 ""inoremap ;) );
+
+"minimap
+let g:minimap_highlight='Visual'
 
 "vimspector
 "nmap <F5> <Plug>
