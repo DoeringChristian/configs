@@ -73,7 +73,7 @@ noremap <RightDrag> <LeftDrag>
 "inoremap <expr> }  strpart(getline('.'), col('.')-1, 1) == "}" ? "\<Right>" : "}"
 "inoremap {;<CR> {<CR>};<ESC>O
 ""smart bracket:
-"inoremap <expr> ; strpart(getline('.'), col('.')-1, 1) == ")" ? "\<Right>;" : ";"
+inoremap <expr> ; strpart(getline('.'), col('.')-1, 1) == ")" ? "\<Right>;" : ";"
 ""inoremap ;) );
 
 "minimap
