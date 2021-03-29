@@ -66,6 +66,37 @@ set encoding=utf-8
 noremap <RightMouse> <4-LeftMouse>
 noremap <RightDrag> <LeftDrag>
 
+"macro
+function! MacroInterrupt()
+    "call inputsave()
+    if strlen(reg_recording()) == 0
+        if mode() == 'n'
+            call inputsave()
+            let tmp_col = col('.')
+            let tmp_line = line('.')
+            let text = input('input:')
+            let line = getline('.')
+            call setline('.', strpart(line, 0, col('.') - 1) . text . strpart(line, col('.') - 1))
+            call cursor(tmp_line, tmp_col + strlen(text))
+            call inputrestore()
+            return text
+        else
+            call inputsave()
+            let text = input('input:')
+            call inputrestore()
+            return text
+        endif
+    else
+        echo "Interrupt added to macro"
+        call setreg(reg_recording(), getreg(reg_recording()) . "\<F2>")
+        "echo getreg("q")
+    endif
+    "call inputrestore()
+endfunction
+
+map <F2> :call MacroInterrupt() <CR>
+inoremap <buffer><expr> <F2> MacroInterrupt()
+
 "close brackets:
 
 "inoremap <expr> "  strpart(getline('.'), col('.')-1, 1) == "\"" ? ( strpart(getline('.'), col('.')-2, 1) == "\\" ? "\"" : "\<Right>" ) : "\"\"\<Left>"
