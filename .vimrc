@@ -68,7 +68,6 @@ noremap <RightDrag> <LeftDrag>
 
 "macro
 function! MacroInterrupt()
-    "call inputsave()
     if strlen(reg_recording()) == 0
         if mode() == 'n'
             call inputsave()
@@ -84,18 +83,16 @@ function! MacroInterrupt()
             call inputsave()
             let text = input('input:')
             call inputrestore()
-            return text
+            return text 
         endif
     else
         echo "Interrupt added to macro"
         call setreg(reg_recording(), getreg(reg_recording()) . "\<F2>")
-        "echo getreg("q")
     endif
-    "call inputrestore()
 endfunction
 
 map <F2> :call MacroInterrupt() <CR>
-inoremap <buffer><expr> <F2> MacroInterrupt()
+inoremap <expr> <F2> MacroInterrupt() 
 
 "close brackets:
 
