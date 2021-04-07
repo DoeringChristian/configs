@@ -94,6 +94,12 @@ endfunction
 map <F2> :call MacroInterrupt() <CR>
 inoremap <expr> <F2> MacroInterrupt() 
 
+"misc:
+
+"Insert line with enter
+noremap <Enter> o<ESC>
+noremap <S-Enter> O<ESC>
+
 "close brackets:
 
 "inoremap <expr> "  strpart(getline('.'), col('.')-1, 1) == "\"" ? ( strpart(getline('.'), col('.')-2, 1) == "\\" ? "\"" : "\<Right>" ) : "\"\"\<Left>"
