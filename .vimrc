@@ -68,22 +68,34 @@ noremap <RightMouse> <4-LeftMouse>
 noremap <RightDrag> <LeftDrag>
 
 let g:macro_interrupt_regs = {}
+let g:macro_interrupt_val = {}
+let g:macro_interrupt_inc = {}
+let g:macro_interrupt_base = {}
+let g:macro_interrupt_key = "\<F2>"
 "macro
 "clear the macro_interrupt_regs dictionary
 function! MacroClear()
     for key in keys(g:macro_interrupt_regs)
         call remove(g:macro_interrupt_regs, key)
     endfor
+    for key in keys(g:macro_interrupt_val)
+        if key != '#'
+            let g:macro_interrupt_val[key] += g:macro_interrupt_inc[key]
+        endif
+    endfor
 endfunction
 function! MacroInterrupt()
     if strlen(reg_recording()) == 0
         if !empty(reg_executing())
-            "insert "\<F2>+" if macro is run for the first time
-            if stridx(getreg(reg_executing()), "\<F2>+") != 0
-                call setreg(reg_executing(), "\<F2>+" . getreg(reg_executing()))
+            "insert "i\<F2>+\<Esc>" if macro is run for the first time
+            "has to be insert mode because getchar() does not seem to be
+            "working innormal mode
+            if stridx(getreg(reg_executing()), "i" . g:macro_interrupt_key . "+") != 0
+                call setreg(reg_executing(), "i" . g:macro_interrupt_key . "+\<Esc>" . getreg(reg_executing()))
                 call MacroClear()
             endif
         endif
+        "function in normal mode
         if mode() == 'n'
             let c = getchar()
             call inputsave()
@@ -98,7 +110,7 @@ function! MacroInterrupt()
                 call MacroClear() 
                 let text = ""
             else
-                let text = input('input:') . nr2char(c)
+                let text = input(nr2char(c) . ' input:') . nr2char(c)
             endif
             let line = getline('.')
             call setline('.', strpart(line, 0, col('.') - 1) . text . strpart(line, col('.') - 1))
@@ -106,24 +118,69 @@ function! MacroInterrupt()
             call inputrestore()
             return text
         else
+            "function in insert mode
+            let text = ""
             let c = getchar()
-            call inputsave()
             if c >= char2nr('a') && c <= char2nr('z') || c >= char2nr('0') && c <= char2nr('9')
+                "execute/write to interactive macro register
                 if(!has_key(g:macro_interrupt_regs, nr2char(c)))
+                    call inputsave()
                     let g:macro_interrupt_regs[nr2char(c)] = input('reg: ' . nr2char(c) . ' input:')
+                    call inputrestore()
                 endif
                 let text = g:macro_interrupt_regs[nr2char(c)]
             elseif char2nr('+') == c
+                "clear macro register / increment all values <F2>+
                 call MacroClear()
                 let text = ""
+            elseif char2nr('#') == c
+                "macro_counter
+                "adds value of inc every time a new macro has been executed
+                "in case no register has been specified it increaces every
+                "time a new escape has been reached
+                "if no input input is given the macro will add inc else it
+                "will be reset to the given vallues <val>,<inc>,<base> where
+                "<base> is the printf specifier for the printed base e.g. 'x'
+                "for hex, 'd' for decimal
+                let mreg = getchar()
+                if mreg >= char2nr('a') && mreg <= char2nr('z') || mreg >= char2nr('0') && mreg <= char2nr('9') 
+                    "if a register is specified allocate it and execute macro
+                    call inputsave()
+                    let math = input('reg: ' . nr2char(mreg) . ' <val>, <inc>, <base>:')
+                    call inputrestore()
+                    let math_split = split(math, ",")
+                    if len(math_split) == 3
+                        let g:macro_interrupt_val[nr2char(mreg)] = math_split[0]
+                        let g:macro_interrupt_inc[nr2char(mreg)] = math_split[1]
+                        let g:macro_interrupt_base[nr2char(mreg)] = math_split[2]
+                    endif
+                    let text = printf('%' . g:macro_interrupt_base[nr2char(mreg)], g:macro_interrupt_val[nr2char(mreg)])
+                else
+                    "no register has been specified
+                    call inputsave()
+                    let math = input('reg: # <val>, <inc>, <base>:')
+                    call inputrestore()
+                    let math_split = split(math, ",")
+                    if len(math_split) == 3
+                        let g:macro_interrupt_val['#'] = math_split[0]
+                        let g:macro_interrupt_inc['#'] = math_split[1]
+                        let g:macro_interrupt_base['#'] = math_split[2]
+                    else
+                        let g:macro_interrupt_val['#'] += g:macro_interrupt_inc['#']
+                    endif
+                    let text = printf('%' . g:macro_interrupt_base['#'], g:macro_interrupt_val['#']) . nr2char(mreg)
+                endif
             else
+                "just <F2> no register specified ask for text
+                call inputsave()
                 let text = input('input:') . nr2char(c)
+                call inputrestore()
             endif
-            call inputrestore()
             return text 
         endif
     else
-        echo "Interrupt added to macro"
+        "if macro is recorded not working because macro recording takes
+        "presedence over mapings
         if stridx(getreg(reg_recording()), "\<F2>+") != 0
             "call setreg('q', "\<F2>+" . getreg('q') . "\<F2>")
         else
