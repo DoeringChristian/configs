@@ -44,6 +44,7 @@ endif
 
 set shiftwidth=4
 set softtabstop=4
+set autoindent
 set smartindent
 set expandtab
 set number
@@ -66,32 +67,73 @@ set encoding=utf-8
 noremap <RightMouse> <4-LeftMouse>
 noremap <RightDrag> <LeftDrag>
 
+let g:macro_interrupt_regs = {}
 "macro
+"clear the macro_interrupt_regs dictionary
+function! MacroClear()
+    for key in keys(g:macro_interrupt_regs)
+        call remove(g:macro_interrupt_regs, key)
+    endfor
+endfunction
 function! MacroInterrupt()
     if strlen(reg_recording()) == 0
+        if !empty(reg_executing())
+            "insert "\<F2>+" if macro is run for the first time
+            if stridx(getreg(reg_executing()), "\<F2>+") != 0
+                call setreg(reg_executing(), "\<F2>+" . getreg(reg_executing()))
+                call MacroClear()
+            endif
+        endif
         if mode() == 'n'
+            let c = getchar()
             call inputsave()
             let tmp_col = col('.')
             let tmp_line = line('.')
-            let text = input('input:')
+            if c >= char2nr('a') && c <= char2nr('z') || c >= char2nr('0') && c <= char2nr('9')
+                if(!has_key(g:macro_interrupt_regs, nr2char(c)))
+                    let g:macro_interrupt_regs[nr2char(c)] = input('reg: ' . nr2char(c) . ' input:')
+                endif
+                let text = g:macro_interrupt_regs[nr2char(c)]
+            elseif char2nr('+') == c
+                call MacroClear() 
+                let text = ""
+            else
+                let text = input('input:') . nr2char(c)
+            endif
             let line = getline('.')
             call setline('.', strpart(line, 0, col('.') - 1) . text . strpart(line, col('.') - 1))
             call cursor(tmp_line, tmp_col + strlen(text))
             call inputrestore()
             return text
         else
+            let c = getchar()
             call inputsave()
-            let text = input('input:')
+            if c >= char2nr('a') && c <= char2nr('z') || c >= char2nr('0') && c <= char2nr('9')
+                if(!has_key(g:macro_interrupt_regs, nr2char(c)))
+                    let g:macro_interrupt_regs[nr2char(c)] = input('reg: ' . nr2char(c) . ' input:')
+                endif
+                let text = g:macro_interrupt_regs[nr2char(c)]
+            elseif char2nr('+') == c
+                call MacroClear()
+                let text = ""
+            else
+                let text = input('input:') . nr2char(c)
+            endif
             call inputrestore()
             return text 
         endif
     else
         echo "Interrupt added to macro"
-        call setreg(reg_recording(), getreg(reg_recording()) . "\<F2>")
+        if stridx(getreg(reg_recording()), "\<F2>+") != 0
+            "call setreg('q', "\<F2>+" . getreg('q') . "\<F2>")
+        else
+            "call setreg(reg_recording(), getreg(reg_recording()) . "\<F2>")
+        endif
+        let @q = @q . "test"
     endif
 endfunction
 
-map <F2> :call MacroInterrupt() <CR>
+map <F2> :call MacroInterrupt() <CR> 
 inoremap <expr> <F2> MacroInterrupt() 
 
 "misc:
