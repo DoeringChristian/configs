@@ -156,7 +156,11 @@ function! MacroInterrupt()
                     "instance)
                     if !has_key(g:macro_interrupt_mathset, nr2char(mreg)) || g:macro_interrupt_mathset[nr2char(mreg)] == 0
                         call inputsave()
-                        let math = input('reg: ' . nr2char(mreg) . ' <val>, <expr>, <base>:')
+                        if has_key(g:macro_interrupt_val, nr2char(mreg))
+                            let math = input('reg: ' . nr2char(mreg) . ' val: ' . printf('%' . g:macro_interrupt_base[nr2char(mreg)], g:macro_interrupt_val[nr2char(mreg)]) . ' <val>, <expr>, <base>:')
+                        else
+                            let math = input('reg: ' . nr2char(mreg) . ' <val>, <expr>, <base>:')
+                        endif
                         call inputrestore()
                         let math_split = split(math, ",")
                         if len(math_split) == 3
@@ -172,7 +176,11 @@ function! MacroInterrupt()
                 else
                     "no register has been specified
                     call inputsave()
-                    let math = input('reg: # <val>, <expr>, <base>:')
+                    if has_key(g:macro_interrupt_val, '#')
+                        let math = input('reg: # val: ' . printf('%' . g:macro_interrupt_base['#'], g:macro_interrupt_val['#']) . ' <val>, <expr>, <base>:')
+                    else
+                        let math = input('reg: # <val>, <expr>, <base>:')
+                    endif
                     call inputrestore()
                     let math_split = split(math, ",")
                     if len(math_split) == 3
