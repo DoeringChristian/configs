@@ -67,9 +67,10 @@ set encoding=utf-8
 noremap <RightMouse> <4-LeftMouse>
 noremap <RightDrag> <LeftDrag>
 
+let g:macro_interrupt_mathset = {'#':1}
 let g:macro_interrupt_regs = {}
 let g:macro_interrupt_val = {}
-let g:macro_interrupt_inc = {}
+let g:macro_interrupt_exp = {}
 let g:macro_interrupt_base = {}
 let g:macro_interrupt_key = "\<F2>"
 "macro
@@ -80,7 +81,10 @@ function! MacroClear()
     endfor
     for key in keys(g:macro_interrupt_val)
         if key != '#'
-            let g:macro_interrupt_val[key] += g:macro_interrupt_inc[key]
+            let n = g:macro_interrupt_val[key]
+            let val = g:macro_interrupt_val[key]
+            let g:macro_interrupt_val[key] = eval(g:macro_interrupt_exp[key])
+            let g:macro_interrupt_mathset[key] = 0
         endif
     endfor
 endfunction
@@ -135,40 +139,57 @@ function! MacroInterrupt()
                 let text = ""
             elseif char2nr('#') == c
                 "macro_counter
-                "adds value of inc every time a new macro has been executed
-                "in case no register has been specified it increaces every
-                "time a new escape has been reached
-                "if no input input is given the macro will add inc else it
-                "will be reset to the given vallues <val>,<inc>,<base> where
-                "<base> is the printf specifier for the printed base e.g. 'x'
-                "for hex, 'd' for decimal
+                "if register has been specified:
+                "    asks for input (<val>, <expr>, <base>), where "n" or "val"
+                "    refers to <val> in <expr> 
+                "    on every new macro call <expr> is applied to <val> if
+                "    input is empty
+                "if no register has been specified:
+                "    asks for input (<val>, <expr>, <base>), where "n" or
+                "    "val" refers to <val> in <expr> 
+                "    <expr> is applied to the '#' register every time it is
+                "    called and input is empty
                 let mreg = getchar()
                 if mreg >= char2nr('a') && mreg <= char2nr('z') || mreg >= char2nr('0') && mreg <= char2nr('9') 
                     "if a register is specified allocate it and execute macro
-                    call inputsave()
-                    let math = input('reg: ' . nr2char(mreg) . ' <val>, <inc>, <base>:')
-                    call inputrestore()
-                    let math_split = split(math, ",")
-                    if len(math_split) == 3
-                        let g:macro_interrupt_val[nr2char(mreg)] = math_split[0]
-                        let g:macro_interrupt_inc[nr2char(mreg)] = math_split[1]
-                        let g:macro_interrupt_base[nr2char(mreg)] = math_split[2]
+                    "test if mathset is true (only ask for input on the first
+                    "instance)
+                    if !has_key(g:macro_interrupt_mathset, nr2char(mreg)) || g:macro_interrupt_mathset[nr2char(mreg)] == 0
+                        call inputsave()
+                        let math = input('reg: ' . nr2char(mreg) . ' <val>, <expr>, <base>:')
+                        call inputrestore()
+                        let math_split = split(math, ",")
+                        if len(math_split) == 3
+                            let g:macro_interrupt_val[nr2char(mreg)] = math_split[0]
+                            let g:macro_interrupt_exp[nr2char(mreg)] = math_split[1]
+                            let g:macro_interrupt_base[nr2char(mreg)] = math_split[2]
+                        endif
                     endif
-                    let text = printf('%' . g:macro_interrupt_base[nr2char(mreg)], g:macro_interrupt_val[nr2char(mreg)])
+                    if has_key(g:macro_interrupt_val, nr2char(mreg))
+                        let g:macro_interrupt_mathset[nr2char(mreg)] = 1
+                        let text = printf('%' . g:macro_interrupt_base[nr2char(mreg)], g:macro_interrupt_val[nr2char(mreg)])
+                    endif
                 else
                     "no register has been specified
                     call inputsave()
-                    let math = input('reg: # <val>, <inc>, <base>:')
+                    let math = input('reg: # <val>, <expr>, <base>:')
                     call inputrestore()
                     let math_split = split(math, ",")
                     if len(math_split) == 3
                         let g:macro_interrupt_val['#'] = math_split[0]
-                        let g:macro_interrupt_inc['#'] = math_split[1]
+                        let g:macro_interrupt_exp['#'] = math_split[1]
                         let g:macro_interrupt_base['#'] = math_split[2]
                     else
-                        let g:macro_interrupt_val['#'] += g:macro_interrupt_inc['#']
+                        if has_key(g:macro_interrupt_val, '#')
+                            " "n" and "val" sould be accesed in <expr>
+                            let n = g:macro_interrupt_val['#']
+                            let val = g:macro_interrupt_val['#']
+                            let g:macro_interrupt_val['#'] = eval(g:macro_interrupt_exp['#'])
+                        endif
                     endif
-                    let text = printf('%' . g:macro_interrupt_base['#'], g:macro_interrupt_val['#']) . nr2char(mreg)
+                    if has_key(g:macro_interrupt_val, '#')
+                        let text = printf('%' . g:macro_interrupt_base['#'], g:macro_interrupt_val['#']) . nr2char(mreg)
+                    endif
                 endif
             else
                 "just <F2> no register specified ask for text
