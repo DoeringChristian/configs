@@ -19,6 +19,7 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-dispatch'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'severin-lemaignan/vim-minimap'
+Plug 'DoeringChristian/VimIT'
 
 "coc extensions:
 Plug 'neoclide/coc-tsserver', {'do': 'yarn install --frozen-lockfile'}
@@ -51,9 +52,9 @@ set number
 set relativenumber 
 syntax on
 "set virtualedit=all
-let mapleader = ","
-let g:mapleader = ","
-map , <leader>
+let mapleader = " "
+let g:mapleader = " "
+map <Space> <leader>
 colorscheme nord
 
 "true color support
@@ -222,157 +223,157 @@ endfunction
 map <F2> :call MacroInterrupt() <CR> 
 inoremap <expr> <F2> MacroInterrupt() 
 
-"VIMIT VIM Interactive Template
-let g:vimit_record_mode_line = 0
-let g:vimit_record_mode_col = 0
-let g:vimit_record_mode = 0
-let g:vimit_var_set = {}
-let g:vimit_var_state = {}
-let g:vimit_var_expr = {}
-let g:vimit_var_format ={}
-
-function! VIMIT_insert(text)
-    call execute("normal! a" . a:text)
-endfunction
-
-function! VIMIT_printf(format, text)
-    call execute("normal! a" . printf(a:format, a:text))
-endfunction
-
-function! VIMIT_eval(expr, var_name)
-    let n = g:vimit_var_state[a:var_name]
-    let g:vimit_var_state[a:var_name] = eval(a:expr)
-endfunction
-
-function! VIMIT_input(name)
-    let var_name = a:name
-    if !has_key(g:vimit_var_set, var_name) || g:vimit_var_set[var_name] == 0
-        let in = input("input:")
-        let in_split = split(in, ';')
-        if empty(in)
-            let in_split = split(g:vimit_var_expr[var_name])
-            for expr in in_split
-                let n = g:vimit_var_state[var_name]
-                try
-                    let g:vimit_var_state[var_name] = eval(expr)
-                catch
-                    let g:vimit_var_state[var_name] = eval("\"" . expr . "\"")
-                endtry
-            endfor
-        else
-            try
-                let g:vimit_var_state[var_name] = eval(in_split[0])
-            catch
-                let g:vimit_var_state[var_name] = eval("\"" . in_split[0] . "\"")
-            endtry
-            call remove(in_split, 0)
-            let g:vimit_var_expr[var_name] = join(in_split, ';')
-        endif
-    endif
-    if has_key(g:vimit_var_format, var_name)
-        call VIMIT_printf(g:vimit_var_format[var_name], g:vimit_var_state[var_name])
-    else
-        call VIMIT_insert(g:vimit_var_state[var_name])
-    endif
-    let g:vimit_var_set[var_name] = 1
-endfunction
-
-function! VIMIT_parse(string)
-    let parse_state = "text"
-    let var_name = ""
-    let var_format = ""
-    for c in str2list(a:string)
-        let char = nr2char(c)
-        if parse_state == "text" 
-            if char == '$'
-                let parse_state = "var"
-            else
-                call VIMIT_insert(char)
-            endif
-        elseif parse_state == "var" 
-            if char == '('
-                let var_name = ""
-                let parse_state = "var_name"
-            elseif char == '$'
-                call VIMIT_insert(char)
-                let parse_state = "text"
-            elseif (c >= char2nr('a') && c <= char2nr('z') || c >= char2nr('A') && c <= char2nr('Z') || c >= char2nr('0') && c <= char2nr('9'))
-                let var_name = ""
-                let parse_state = "var_name_nb"
-            else
-                let parse_state = "error"
-            endif
-        elseif parse_state == "var_name" 
-            if (c >= char2nr('a') && c <= char2nr('z') || c >= char2nr('A') && c <= char2nr('Z') || c >= char2nr('0') && c <= char2nr('9'))
-                let var_name .= char
-                let parse_state = "var_name"
-            elseif char == '%'
-                let var_format = '%'
-                let parse_state = "format"
-            elseif char == ')'
-                call VIMIT_input(var_name)
-                let parse_state = "text"
-            else
-                let parse_state = "error"
-            endif
-        elseif parse_state == "format"
-            if char != ')'
-                let var_format .= char
-                let parse_state = "format"
-            else
-                let g:vimit_var_format[var_name] = var_format
-                call VIMIT_input(var_name)
-                let parse_state = "text"
-            endif
-        elseif parse_state == "var_name_nb"
-            if (c >= char2nr('a') && c <= char2nr('z') || c >= char2nr('A') && c <= char2nr('Z') || c >= char2nr('0') && c <= char2nr('9'))
-                let var_name .= char
-                let parse_state = "var_name"
-            elseif char == '%'
-                let var_format = '%'
-                let parse_state = "format_nb"
-            else
-                call VIMIT_input(var_name)
-                call VIMIT_insert(char)
-                let parse_state = "text"
-            endif
-        elseif parse_state == "format_nb"
-            if char != ' '
-                let var_format .= char
-                let parse_state = "format_nb"
-            else
-                let g:vimit_var_format[var_name] = var_format
-                call VIMIT_input(var_name)
-                call VIMIT_insert(char)
-                let parse_state = "text"
-            endif
-        else
-
-        endif
-    endfor
-    for key in keys(g:vimit_var_set)
-        let g:vimit_var_set[key] = 0
-    endfor
-
-endfunction
-
-function! VIMIT_record()
-    if vimit_record_mode == 0
-        let g:vimit_record_mode_line = line('.')
-        let g:vimit_record_mode_col = line('.')
-        let g:vimit_record_mode = 1
-    else
-        let col = col('.')
-    endif
-    echo "test"
-endfunction
-
-function! VIMIT_reg()
-    let c = nr2char(getchar())
-    call VIMIT_parse(getreg(c))
-endfunction
-
-nnoremap t :call VIMIT_reg() <CR>
+""VIMIT VIM Interactive Template
+"let g:vimit_record_mode_line = 0
+"let g:vimit_record_mode_col = 0
+"let g:vimit_record_mode = 0
+"let g:vimit_var_set = {}
+"let g:vimit_var_state = {}
+"let g:vimit_var_expr = {}
+"let g:vimit_var_format ={}
+"
+"function! s:VIMIT_insert(text)
+"    call execute("normal! a" . a:text)
+"endfunction
+"
+"function! s:VIMIT_printf(format, text)
+"    call execute("normal! a" . printf(a:format, a:text))
+"endfunction
+"
+"function! s:VIMIT_eval(expr, var_name)
+"    let n = g:vimit_var_state[a:var_name]
+"    let g:vimit_var_state[a:var_name] = eval(a:expr)
+"endfunction
+"
+"function! s:VIMIT_input(name)
+"    let var_name = a:name
+"    if !has_key(g:vimit_var_set, var_name) || g:vimit_var_set[var_name] == 0
+"        let in = input("input:")
+"        let in_split = split(in, ';')
+"        if empty(in)
+"            let in_split = split(g:vimit_var_expr[var_name])
+"            for expr in in_split
+"                let n = g:vimit_var_state[var_name]
+"                try
+"                    let g:vimit_var_state[var_name] = eval(expr)
+"                catch
+"                    let g:vimit_var_state[var_name] = eval("\"" . expr . "\"")
+"                endtry
+"            endfor
+"        else
+"            try
+"                let g:vimit_var_state[var_name] = eval(in_split[0])
+"            catch
+"                let g:vimit_var_state[var_name] = eval("\"" . in_split[0] . "\"")
+"            endtry
+"            call remove(in_split, 0)
+"            let g:vimit_var_expr[var_name] = join(in_split, ';')
+"        endif
+"    endif
+"    if has_key(g:vimit_var_format, var_name)
+"        call s:VIMIT_printf(g:vimit_var_format[var_name], g:vimit_var_state[var_name])
+"    else
+"        call s:VIMIT_insert(g:vimit_var_state[var_name])
+"    endif
+"    let g:vimit_var_set[var_name] = 1
+"endfunction
+"
+"function! VIMIT_parse(string)
+"    let parse_state = "text"
+"    let var_name = ""
+"    let var_format = ""
+"    for c in str2list(a:string)
+"        let char = nr2char(c)
+"        if parse_state == "text" 
+"            if char == '$'
+"                let parse_state = "var"
+"            else
+"                call s:VIMIT_insert(char)
+"            endif
+"        elseif parse_state == "var" 
+"            if char == '('
+"                let var_name = ""
+"                let parse_state = "var_name"
+"            elseif char == '$'
+"                call s:VIMIT_insert(char)
+"                let parse_state = "text"
+"            elseif (c >= char2nr('a') && c <= char2nr('z') || c >= char2nr('A') && c <= char2nr('Z') || c >= char2nr('0') && c <= char2nr('9'))
+"                let var_name = ""
+"                let parse_state = "var_name_nb"
+"            else
+"                let parse_state = "error"
+"            endif
+"        elseif parse_state == "var_name" 
+"            if (c >= char2nr('a') && c <= char2nr('z') || c >= char2nr('A') && c <= char2nr('Z') || c >= char2nr('0') && c <= char2nr('9'))
+"                let var_name .= char
+"                let parse_state = "var_name"
+"            elseif char == '%'
+"                let var_format = '%'
+"                let parse_state = "format"
+"            elseif char == ')'
+"                call s:VIMIT_input(var_name)
+"                let parse_state = "text"
+"            else
+"                let parse_state = "error"
+"            endif
+"        elseif parse_state == "format"
+"            if char != ')'
+"                let var_format .= char
+"                let parse_state = "format"
+"            else
+"                let g:vimit_var_format[var_name] = var_format
+"                call s:VIMIT_input(var_name)
+"                let parse_state = "text"
+"            endif
+"        elseif parse_state == "var_name_nb"
+"            if (c >= char2nr('a') && c <= char2nr('z') || c >= char2nr('A') && c <= char2nr('Z') || c >= char2nr('0') && c <= char2nr('9'))
+"                let var_name .= char
+"                let parse_state = "var_name"
+"            elseif char == '%'
+"                let var_format = '%'
+"                let parse_state = "format_nb"
+"            else
+"                call s:VIMIT_input(var_name)
+"                call s:VIMIT_insert(char)
+"                let parse_state = "text"
+"            endif
+"        elseif parse_state == "format_nb"
+"            if char != ' '
+"                let var_format .= char
+"                let parse_state = "format_nb"
+"            else
+"                let g:vimit_var_format[var_name] = var_format
+"                call s:VIMIT_input(var_name)
+"                call s:VIMIT_insert(char)
+"                let parse_state = "text"
+"            endif
+"        else
+"
+"        endif
+"    endfor
+"    for key in keys(g:vimit_var_set)
+"        let g:vimit_var_set[key] = 0
+"    endfor
+"
+"endfunction
+"
+"function! VIMIT_record()
+"    if vimit_record_mode == 0
+"        let g:vimit_record_mode_line = line('.')
+"        let g:vimit_record_mode_col = line('.')
+"        let g:vimit_record_mode = 1
+"    else
+"        let col = col('.')
+"    endif
+"    echo "test"
+"endfunction
+"
+"function! VIMIT_reg()
+"    let c = nr2char(getchar())
+"    call VIMIT_parse(getreg(c))
+"endfunction
+"
+"nnoremap t :call VIMIT_reg() <CR>
 
 "misc:
 
