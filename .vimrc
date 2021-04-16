@@ -32,6 +32,7 @@ Plug 'fannheyward/coc-xml', {'do': 'yarn install --frozen-lockfile'}
 Plug 'neoclide/coc-html', {'do': 'yarn install --frozen-lockfile'}
 Plug 'neoclide/coc-css', {'do': 'yarn install --frozen-lockfile'}
 Plug 'fannheyward/coc-texlab', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc-vimtex', {'do': 'yarn install --frozen-lockfile'}
 
 call plug#end()
 
