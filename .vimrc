@@ -19,6 +19,7 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-dispatch'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'severin-lemaignan/vim-minimap'
+Plug 'justinmk/vim-sneak'
 Plug 'DoeringChristian/VimIT'
 
 "coc extensions:
