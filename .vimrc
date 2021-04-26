@@ -15,11 +15,12 @@ Plug 'arcticicestudio/nord-vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'puremourning/vimspector'
 Plug 'preservim/nerdtree'
-Plug 'jiangmiao/auto-pairs'
+"Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-dispatch'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'severin-lemaignan/vim-minimap'
 Plug 'justinmk/vim-sneak'
+"Plug 'DoeringChristian/auto-pairs'
 Plug 'DoeringChristian/VimIT'
 
 "coc extensions:
@@ -70,314 +71,206 @@ set encoding=utf-8
 noremap <RightMouse> <4-LeftMouse>
 noremap <RightDrag> <LeftDrag>
 
-let g:macro_interrupt_mathset = {'#':1}
-let g:macro_interrupt_regs = {}
-let g:macro_interrupt_val = {}
-let g:macro_interrupt_exp = {}
-let g:macro_interrupt_base = {}
-let g:macro_interrupt_key = "\<F2>"
-"macro
-"clear the macro_interrupt_regs dictionary
-function! MacroClear()
-    for key in keys(g:macro_interrupt_regs)
-        call remove(g:macro_interrupt_regs, key)
-    endfor
-    for key in keys(g:macro_interrupt_val)
-        if key != '#'
-            let n = g:macro_interrupt_val[key]
-            let val = g:macro_interrupt_val[key]
-            let g:macro_interrupt_val[key] = eval(g:macro_interrupt_exp[key])
-            let g:macro_interrupt_mathset[key] = 0
-        endif
-    endfor
+"paring-test
+function! GetKey(dict, value)
+    return join(keys(filter(copy(a:dict), 'v:val ==# ' . string(a:value))))
 endfunction
-function! MacroInterrupt()
-    if strlen(reg_recording()) == 0
-        if !empty(reg_executing())
-            "insert "i\<F2>+\<Esc>" if macro is run for the first time
-            "has to be insert mode because getchar() does not seem to be
-            "working innormal mode
-            if stridx(getreg(reg_executing()), "i" . g:macro_interrupt_key . "+") != 0
-                call setreg(reg_executing(), "i" . g:macro_interrupt_key . "+\<Esc>" . getreg(reg_executing()))
-                call MacroClear()
-            endif
+
+function! Values(dict)
+    let ret = []
+    for key in keys(a:dict)
+        call add(ret, a:dict[key])
+    endfor
+    return ret
+endfunction
+
+function! HasValue(dict, value)
+    return !empty(GetKey(a:dict, a:value))
+endfunction
+
+function! Goto(pos)
+    let ret = ""
+    if g:pos[1] > a:pos[1]
+        let ret .= (g:pos[1]-a:pos[1]) . "h"
+    elseif a:pos[1] > g:pos[1]
+        let ret .= (a:pos[1]-g:pos[1]) . "l"
+    endif
+    if g:pos[0] > a:pos[0]
+        let ret .= (g:pos[0]-a:pos[0]) . "k"
+    elseif a:pos[0] > g:pos[0]
+        let ret .= (a:pos[0]-g:pos[0]) . "j"
+    endif
+    let g:pos = a:pos
+    return ret
+endfunction
+
+function! Delete(len)
+    return repeat("x", a:len)
+endfunction
+
+let g:pairs = {"{":"}", "(":")", "'":"'", '"':'"', "[":"]"}
+"let g:spairs = ["'", '"'] 
+
+function! GetPrevKey()
+    let max = 0
+    let max_key = ""
+    for key in keys(g:pairs)
+        if col('.') > strlen(key) && strlen(key) > max && getline('.')[col('.')-strlen(key)-1:col('.')-2] ==# key 
+            let max = strlen(key)
+            let max_key = key
         endif
-        "function in normal mode
-        if mode() == 'n'
-            let c = getchar()
-            call inputsave()
-            let tmp_col = col('.')
-            let tmp_line = line('.')
-            if c >= char2nr('a') && c <= char2nr('z') || c >= char2nr('0') && c <= char2nr('9')
-                if(!has_key(g:macro_interrupt_regs, nr2char(c)))
-                    let g:macro_interrupt_regs[nr2char(c)] = input('reg: ' . nr2char(c) . ' input:')
-                endif
-                let text = g:macro_interrupt_regs[nr2char(c)]
-            elseif char2nr('+') == c
-                call MacroClear() 
-                let text = ""
-            else
-                let text = input(nr2char(c) . ' input:') . nr2char(c)
-            endif
-            let line = getline('.')
-            call setline('.', strpart(line, 0, col('.') - 1) . text . strpart(line, col('.') - 1))
-            call cursor(tmp_line, tmp_col + strlen(text))
-            call inputrestore()
-            return text
-        else
-            "function in insert mode
-            let text = ""
-            let c = getchar()
-            if c >= char2nr('a') && c <= char2nr('z') || c >= char2nr('0') && c <= char2nr('9')
-                "execute/write to interactive macro register
-                if(!has_key(g:macro_interrupt_regs, nr2char(c)))
-                    call inputsave()
-                    let g:macro_interrupt_regs[nr2char(c)] = input('reg: ' . nr2char(c) . ' input:')
-                    call inputrestore()
-                endif
-                let text = g:macro_interrupt_regs[nr2char(c)]
-            elseif char2nr('+') == c
-                "clear macro register / increment all values <F2>+
-                call MacroClear()
-                let text = ""
-            elseif char2nr('#') == c
-                "macro_counter
-                "if register has been specified:
-                "    asks for input (<val>, <expr>, <base>), where "n" or "val"
-                "    refers to <val> in <expr> 
-                "    on every new macro call <expr> is applied to <val> if
-                "    input is empty
-                "if no register has been specified:
-                "    asks for input (<val>, <expr>, <base>), where "n" or
-                "    "val" refers to <val> in <expr> 
-                "    <expr> is applied to the '#' register every time it is
-                "    called and input is empty
-                let mreg = getchar()
-                if mreg >= char2nr('a') && mreg <= char2nr('z') || mreg >= char2nr('0') && mreg <= char2nr('9') 
-                    "if a register is specified allocate it and execute macro
-                    "test if mathset is true (only ask for input on the first
-                    "instance)
-                    if !has_key(g:macro_interrupt_mathset, nr2char(mreg)) || g:macro_interrupt_mathset[nr2char(mreg)] == 0
-                        call inputsave()
-                        if has_key(g:macro_interrupt_val, nr2char(mreg))
-                            let math = input('reg: ' . nr2char(mreg) . ' val: ' . printf('%' . g:macro_interrupt_base[nr2char(mreg)], g:macro_interrupt_val[nr2char(mreg)]) . ' <val>, <expr>, <base>:')
-                        else
-                            let math = input('reg: ' . nr2char(mreg) . ' <val>, <expr>, <base>:')
-                        endif
-                        call inputrestore()
-                        let math_split = split(math, ",")
-                        if len(math_split) == 3
-                            let g:macro_interrupt_val[nr2char(mreg)] = math_split[0]
-                            let g:macro_interrupt_exp[nr2char(mreg)] = math_split[1]
-                            let g:macro_interrupt_base[nr2char(mreg)] = math_split[2]
-                        endif
-                    endif
-                    if has_key(g:macro_interrupt_val, nr2char(mreg))
-                        let g:macro_interrupt_mathset[nr2char(mreg)] = 1
-                        let text = printf('%' . g:macro_interrupt_base[nr2char(mreg)], g:macro_interrupt_val[nr2char(mreg)])
-                    endif
+    endfor
+    return max_key
+endfunction
+
+function! MatchRightKey(str)
+    let line = getline('.')
+    return col('.')+strlen(a:str)-1 <= strlen(line) && line[col('.')-1:col('.')+strlen(a:str)-2] ==# a:str
+endfunction
+
+function! GetLevelLine(pos, start, end)
+    let i = a:pos[0]
+    let j = 0
+    let c = 0
+    let line = getline(i)
+    while j < a:pos[1]
+        if strlen(line) - j >= strlen(a:start) && line[j:j+strlen(a:start)-1] ==# a:start
+            if a:start ==# a:end
+                if c > 0
+                    let c = 1
                 else
-                    "no register has been specified
-                    call inputsave()
-                    if has_key(g:macro_interrupt_val, '#')
-                        let math = input('reg: # val: ' . printf('%' . g:macro_interrupt_base['#'], g:macro_interrupt_val['#']) . ' <val>, <expr>, <base>:')
-                    else
-                        let math = input('reg: # <val>, <expr>, <base>:')
-                    endif
-                    call inputrestore()
-                    let math_split = split(math, ",")
-                    if len(math_split) == 3
-                        let g:macro_interrupt_val['#'] = math_split[0]
-                        let g:macro_interrupt_exp['#'] = math_split[1]
-                        let g:macro_interrupt_base['#'] = math_split[2]
-                    else
-                        if has_key(g:macro_interrupt_val, '#')
-                            " "n" and "val" sould be accesed in <expr>
-                            let n = g:macro_interrupt_val['#']
-                            let val = g:macro_interrupt_val['#']
-                            let g:macro_interrupt_val['#'] = eval(g:macro_interrupt_exp['#'])
-                        endif
-                    endif
-                    if has_key(g:macro_interrupt_val, '#')
-                        let text = printf('%' . g:macro_interrupt_base['#'], g:macro_interrupt_val['#']) . nr2char(mreg)
-                    endif
+                    let c = 0
                 endif
             else
-                "just <F2> no register specified ask for text
-                call inputsave()
-                let text = input('input:') . nr2char(c)
-                call inputrestore()
+                let c += 1
             endif
-            return text 
+        elseif strlen(line) - j >= strlen(a:end) && line[j:j+strlen(a:end)-1] ==# a:end
+            let c -= 1
         endif
-    else
-        "if macro is recorded not working because macro recording takes
-        "presedence over mapings
-        if stridx(getreg(reg_recording()), "\<F2>+") != 0
-            "call setreg('q', "\<F2>+" . getreg('q') . "\<F2>")
+        let j += 1
+    endwhile
+    return c
+endfunction
+
+function! GetLevel(pos, start, end)
+    let i = 1
+    let j = 0
+    let c = 0
+    while i < a:pos[0]
+        let line = getline(i)
+        while j < strlen(line)
+            if strlen(line) - j >= strlen(a:start) && line[j:j+strlen(a:start)-1] ==# a:start
+                let c += 1
+            elseif strlen(line) - j >= strlen(a:end) && line[j:j+strlen(a:end)-1] ==# a:end
+                let c -= 1
+            endif
+            let j += 1
+        endwhile
+        let j = 0
+        let i += 1
+    endwhile
+    let j = 0 
+    let line = getline(i)
+    while j < a:pos[1]
+        if strlen(line) - j >= strlen(a:start) && line[j:j+strlen(a:start)-1] ==# a:start
+            let c += 1
+        elseif strlen(line) - j >= strlen(a:end) && line[j:j+strlen(a:end)-1] ==# a:end
+            let c -= 1
+        endif
+        let j += 1
+    endwhile
+    return c
+endfunction
+
+function! SearchPairPos(start, middle, end, flags)
+    call cursor(line('.'), col('.')-1)
+    let match = searchpairpos(a:start, a:middle, a:end, a:flags, 'synIDattr(synID(line("."), col("."), 0), "name") =~? "string"')
+    return match
+endfunction
+
+let g:ret = ""
+let g:pos = [line('.'), col('.')]
+
+function! Sub(pressed)
+    let g:ret = ""
+    let orig_pos = [line('.'), col('.')]
+    let g:pos = [line('.'), col('.')]
+    if a:pressed == "\<BS>"
+        let line = getline('.')
+        let key = GetPrevKey()
+        if !empty(key)
+            let match = SearchPairPos(key, "", g:pairs[key], "W")
+            if match != [0,0]
+                let ret = "\<Esc>"
+                let ret .= Delete(strlen(key)) . Goto(match) . Delete(strlen(g:pairs[key]))
+                let ret .= Goto(orig_pos) . "a"
+                call cursor(orig_pos[0], orig_pos[1])
+                return ret
+            else
+                return "\<BS>"
+            endif
         else
-            "call setreg(reg_recording(), getreg(reg_recording()) . "\<F2>")
+            return "\<BS>"
         endif
-        let @q = @q . "test"
+    elseif has_key(g:pairs, a:pressed)
+        let char = getline('.')[col('.')]
+        "call input(MatchRightKey(")"))
+        "call input(string(filter(copy(g:pairs), "MatchRightKey(v:val)")))
+        if (char2nr(getline('.')[col('.')]) <= char2nr(" ") || !empty(filter(copy(g:pairs), "MatchRightKey(v:val)")))
+            let key = GetKey(g:pairs, a:pressed)
+            if !(synIDattr(synID(line("."), col("."), 0), "name") =~? "string")
+                return a:pressed . g:pairs[a:pressed] . "\<Left>"
+            elseif (GetLevelLine([line('.'), strlen(getline(line('.')))], key, a:pressed) <= 0 || key ==# a:pressed) && MatchRightKey(a:pressed)
+                "if the pair is inside a comment but at the and and the pair
+                "is a quote then escape it
+                return "\<Right>"
+            endif
+        else
+            return a:pressed
+        endif
+    elseif HasValue(g:pairs, a:pressed)
+        let key = GetKey(g:pairs, a:pressed)
+        if (GetLevelLine([line('.'), strlen(getline(line('.')))], key, a:pressed) <= 0 || key ==# a:pressed) && MatchRightKey(a:pressed)
+            return "\<Right>"
+        else
+            return a:pressed
+        endif
+    elseif a:pressed == "\<CR>"
+        let key_prev = GetPrevKey()
+        let key_next = ""
+        let line = getline('.')
+        if !empty(key_prev) && searchpos(g:pairs[key_prev]) != [0,0] 
+            let ws = line[col('.'):searchpos(g:pairs[key_prev])[0]-2] 
+            if 1 "matchstr(ws, '\_s*') == ws
+                return "\<CR>\<Esc><<O"
+            endif
+        endif
+        return "\<CR>"
+    else
+        return a:pressed
     endif
 endfunction
 
-map <F2> :call MacroInterrupt() <CR> 
-inoremap <expr> <F2> MacroInterrupt() 
+function! Init()
+    for key in keys(g:pairs)
+        if key == '"'
+            execute "inoremap <expr> " . key . " Sub('" . key . "')"
+        else
+            execute 'inoremap <expr> ' . key . ' Sub("' . key . '")'
+        endif
+    endfor
+    for value in Values(g:pairs)
+        if value == '"'
+            execute "inoremap <expr> " . key . " Sub('" . key . "')"
+        else
+            execute 'inoremap <expr> ' . value . ' Sub("' . value . '")'
+        endif
+    endfor
+    execute 'inoremap <expr> <BS> Sub("\<BS>")'
+    execute 'inoremap <expr> <CR> Sub("\<CR>")'
+endfunction
 
-""VIMIT VIM Interactive Template
-"let g:vimit_record_mode_line = 0
-"let g:vimit_record_mode_col = 0
-"let g:vimit_record_mode = 0
-"let g:vimit_var_set = {}
-"let g:vimit_var_state = {}
-"let g:vimit_var_expr = {}
-"let g:vimit_var_format ={}
-"
-"function! s:VIMIT_insert(text)
-"    call execute("normal! a" . a:text)
-"endfunction
-"
-"function! s:VIMIT_printf(format, text)
-"    call execute("normal! a" . printf(a:format, a:text))
-"endfunction
-"
-"function! s:VIMIT_eval(expr, var_name)
-"    let n = g:vimit_var_state[a:var_name]
-"    let g:vimit_var_state[a:var_name] = eval(a:expr)
-"endfunction
-"
-"function! s:VIMIT_input(name)
-"    let var_name = a:name
-"    if !has_key(g:vimit_var_set, var_name) || g:vimit_var_set[var_name] == 0
-"        let in = input("input:")
-"        let in_split = split(in, ';')
-"        if empty(in)
-"            let in_split = split(g:vimit_var_expr[var_name])
-"            for expr in in_split
-"                let n = g:vimit_var_state[var_name]
-"                try
-"                    let g:vimit_var_state[var_name] = eval(expr)
-"                catch
-"                    let g:vimit_var_state[var_name] = eval("\"" . expr . "\"")
-"                endtry
-"            endfor
-"        else
-"            try
-"                let g:vimit_var_state[var_name] = eval(in_split[0])
-"            catch
-"                let g:vimit_var_state[var_name] = eval("\"" . in_split[0] . "\"")
-"            endtry
-"            call remove(in_split, 0)
-"            let g:vimit_var_expr[var_name] = join(in_split, ';')
-"        endif
-"    endif
-"    if has_key(g:vimit_var_format, var_name)
-"        call s:VIMIT_printf(g:vimit_var_format[var_name], g:vimit_var_state[var_name])
-"    else
-"        call s:VIMIT_insert(g:vimit_var_state[var_name])
-"    endif
-"    let g:vimit_var_set[var_name] = 1
-"endfunction
-"
-"function! VIMIT_parse(string)
-"    let parse_state = "text"
-"    let var_name = ""
-"    let var_format = ""
-"    for c in str2list(a:string)
-"        let char = nr2char(c)
-"        if parse_state == "text" 
-"            if char == '$'
-"                let parse_state = "var"
-"            else
-"                call s:VIMIT_insert(char)
-"            endif
-"        elseif parse_state == "var" 
-"            if char == '('
-"                let var_name = ""
-"                let parse_state = "var_name"
-"            elseif char == '$'
-"                call s:VIMIT_insert(char)
-"                let parse_state = "text"
-"            elseif (c >= char2nr('a') && c <= char2nr('z') || c >= char2nr('A') && c <= char2nr('Z') || c >= char2nr('0') && c <= char2nr('9'))
-"                let var_name = ""
-"                let parse_state = "var_name_nb"
-"            else
-"                let parse_state = "error"
-"            endif
-"        elseif parse_state == "var_name" 
-"            if (c >= char2nr('a') && c <= char2nr('z') || c >= char2nr('A') && c <= char2nr('Z') || c >= char2nr('0') && c <= char2nr('9'))
-"                let var_name .= char
-"                let parse_state = "var_name"
-"            elseif char == '%'
-"                let var_format = '%'
-"                let parse_state = "format"
-"            elseif char == ')'
-"                call s:VIMIT_input(var_name)
-"                let parse_state = "text"
-"            else
-"                let parse_state = "error"
-"            endif
-"        elseif parse_state == "format"
-"            if char != ')'
-"                let var_format .= char
-"                let parse_state = "format"
-"            else
-"                let g:vimit_var_format[var_name] = var_format
-"                call s:VIMIT_input(var_name)
-"                let parse_state = "text"
-"            endif
-"        elseif parse_state == "var_name_nb"
-"            if (c >= char2nr('a') && c <= char2nr('z') || c >= char2nr('A') && c <= char2nr('Z') || c >= char2nr('0') && c <= char2nr('9'))
-"                let var_name .= char
-"                let parse_state = "var_name"
-"            elseif char == '%'
-"                let var_format = '%'
-"                let parse_state = "format_nb"
-"            else
-"                call s:VIMIT_input(var_name)
-"                call s:VIMIT_insert(char)
-"                let parse_state = "text"
-"            endif
-"        elseif parse_state == "format_nb"
-"            if char != ' '
-"                let var_format .= char
-"                let parse_state = "format_nb"
-"            else
-"                let g:vimit_var_format[var_name] = var_format
-"                call s:VIMIT_input(var_name)
-"                call s:VIMIT_insert(char)
-"                let parse_state = "text"
-"            endif
-"        else
-"
-"        endif
-"    endfor
-"    for key in keys(g:vimit_var_set)
-"        let g:vimit_var_set[key] = 0
-"    endfor
-"
-"endfunction
-"
-"function! VIMIT_record()
-"    if vimit_record_mode == 0
-"        let g:vimit_record_mode_line = line('.')
-"        let g:vimit_record_mode_col = line('.')
-"        let g:vimit_record_mode = 1
-"    else
-"        let col = col('.')
-"    endif
-"    echo "test"
-"endfunction
-"
-"function! VIMIT_reg()
-"    let c = nr2char(getchar())
-"    call VIMIT_parse(getreg(c))
-"endfunction
-"
-"nnoremap t :call VIMIT_reg() <CR>
-
-"misc:
+autocmd BufEnter * :call Init()
 
 "Insert line with enter
 noremap <Enter> o<ESC>
