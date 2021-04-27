@@ -16,6 +16,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'puremourning/vimspector'
 Plug 'preservim/nerdtree'
 "Plug 'jiangmiao/auto-pairs'
+Plug 'Krasjet/auto.pairs'
 Plug 'tpope/vim-dispatch'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'severin-lemaignan/vim-minimap'
@@ -200,7 +201,7 @@ function! Sub(pressed)
         let key = GetPrevKey()
         if !empty(key)
             let match = SearchPairPos(key, "", g:pairs[key], "W")
-            if match != [0,0]
+            if match != [0,0] && GetLevelLine([line('.'), strlen(getline(line('.')))], key, g:pairs[key]) <= 0
                 let ret = "\<Esc>"
                 let ret .= Delete(strlen(key)) . Goto(match) . Delete(strlen(g:pairs[key]))
                 let ret .= Goto(orig_pos) . "a"
@@ -270,7 +271,7 @@ function! Init()
     execute 'inoremap <expr> <CR> Sub("\<CR>")'
 endfunction
 
-autocmd BufEnter * :call Init()
+"autocmd BufEnter * :call Init()
 
 "Insert line with enter
 noremap <Enter> o<ESC>
@@ -301,6 +302,8 @@ let g:minimap_highlight='Visual'
 let g:vimspector_enable_mappings = 'HUMAN'
 "packadd! vimspector
 
+"Autopairs:
+let g:AutoPairsMultilineClose = 0
 
 "Nerd Tree:
 autocmd VimEnter * NERDTree | wincmd p
