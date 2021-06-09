@@ -8,6 +8,13 @@ if empty(glob(data_dir . '/autoload/plug.vim'))
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
+"install language packs
+if empty(glob(data_dir. '/spell/'))
+    silent execute '!mkdir ' . data_dir . '/spell/'
+    silent execute '!wget -P ' . data_dir . '/spell/ http://ftp.vim.org/vim/runtime/spell/de.utf-8.spl'
+    silent execute '!wget -P ' . data_dir . '/spell/ http://ftp.vim.org/vim/runtime/spell/de.utf-8.sug'
+endif
+
 call plug#begin(data_dir . '/plugged')
 
 Plug 'vim-airline/vim-airline'
@@ -72,206 +79,15 @@ set encoding=utf-8
 noremap <RightMouse> <4-LeftMouse>
 noremap <RightDrag> <LeftDrag>
 
-"paring-test
-function! GetKey(dict, value)
-    return join(keys(filter(copy(a:dict), 'v:val ==# ' . string(a:value))))
+
+"set spellchecking language
+function! ChangeLanguage()
+    let str = input("Language Code:")
+    call execute ("setlocal spell spelllang=" . str)
+    return ""
 endfunction
 
-function! Values(dict)
-    let ret = []
-    for key in keys(a:dict)
-        call add(ret, a:dict[key])
-    endfor
-    return ret
-endfunction
-
-function! HasValue(dict, value)
-    return !empty(GetKey(a:dict, a:value))
-endfunction
-
-function! Goto(pos)
-    let ret = ""
-    if g:pos[1] > a:pos[1]
-        let ret .= (g:pos[1]-a:pos[1]) . "h"
-    elseif a:pos[1] > g:pos[1]
-        let ret .= (a:pos[1]-g:pos[1]) . "l"
-    endif
-    if g:pos[0] > a:pos[0]
-        let ret .= (g:pos[0]-a:pos[0]) . "k"
-    elseif a:pos[0] > g:pos[0]
-        let ret .= (a:pos[0]-g:pos[0]) . "j"
-    endif
-    let g:pos = a:pos
-    return ret
-endfunction
-
-function! Delete(len)
-    return repeat("x", a:len)
-endfunction
-
-let g:pairs = {"{":"}", "(":")", "'":"'", '"':'"', "[":"]"}
-"let g:spairs = ["'", '"'] 
-
-function! GetPrevKey()
-    let max = 0
-    let max_key = ""
-    for key in keys(g:pairs)
-        if col('.') > strlen(key) && strlen(key) > max && getline('.')[col('.')-strlen(key)-1:col('.')-2] ==# key 
-            let max = strlen(key)
-            let max_key = key
-        endif
-    endfor
-    return max_key
-endfunction
-
-function! MatchRightKey(str)
-    let line = getline('.')
-    return col('.')+strlen(a:str)-1 <= strlen(line) && line[col('.')-1:col('.')+strlen(a:str)-2] ==# a:str
-endfunction
-
-function! GetLevelLine(pos, start, end)
-    let i = a:pos[0]
-    let j = 0
-    let c = 0
-    let line = getline(i)
-    while j < a:pos[1]
-        if strlen(line) - j >= strlen(a:start) && line[j:j+strlen(a:start)-1] ==# a:start
-            if a:start ==# a:end
-                if c > 0
-                    let c = 1
-                else
-                    let c = 0
-                endif
-            else
-                let c += 1
-            endif
-        elseif strlen(line) - j >= strlen(a:end) && line[j:j+strlen(a:end)-1] ==# a:end
-            let c -= 1
-        endif
-        let j += 1
-    endwhile
-    return c
-endfunction
-
-function! GetLevel(pos, start, end)
-    let i = 1
-    let j = 0
-    let c = 0
-    while i < a:pos[0]
-        let line = getline(i)
-        while j < strlen(line)
-            if strlen(line) - j >= strlen(a:start) && line[j:j+strlen(a:start)-1] ==# a:start
-                let c += 1
-            elseif strlen(line) - j >= strlen(a:end) && line[j:j+strlen(a:end)-1] ==# a:end
-                let c -= 1
-            endif
-            let j += 1
-        endwhile
-        let j = 0
-        let i += 1
-    endwhile
-    let j = 0 
-    let line = getline(i)
-    while j < a:pos[1]
-        if strlen(line) - j >= strlen(a:start) && line[j:j+strlen(a:start)-1] ==# a:start
-            let c += 1
-        elseif strlen(line) - j >= strlen(a:end) && line[j:j+strlen(a:end)-1] ==# a:end
-            let c -= 1
-        endif
-        let j += 1
-    endwhile
-    return c
-endfunction
-
-function! SearchPairPos(start, middle, end, flags)
-    call cursor(line('.'), col('.')-1)
-    let match = searchpairpos(a:start, a:middle, a:end, a:flags, 'synIDattr(synID(line("."), col("."), 0), "name") =~? "string"')
-    return match
-endfunction
-
-let g:ret = ""
-let g:pos = [line('.'), col('.')]
-
-function! Sub(pressed)
-    let g:ret = ""
-    let orig_pos = [line('.'), col('.')]
-    let g:pos = [line('.'), col('.')]
-    if a:pressed == "\<BS>"
-        let line = getline('.')
-        let key = GetPrevKey()
-        if !empty(key)
-            let match = SearchPairPos(key, "", g:pairs[key], "W")
-            if match != [0,0] && GetLevelLine([line('.'), strlen(getline(line('.')))], key, g:pairs[key]) <= 0
-                let ret = "\<Esc>"
-                let ret .= Delete(strlen(key)) . Goto(match) . Delete(strlen(g:pairs[key]))
-                let ret .= Goto(orig_pos) . "a"
-                call cursor(orig_pos[0], orig_pos[1])
-                return ret
-            else
-                return "\<BS>"
-            endif
-        else
-            return "\<BS>"
-        endif
-    elseif has_key(g:pairs, a:pressed)
-        let char = getline('.')[col('.')]
-        "call input(MatchRightKey(")"))
-        "call input(string(filter(copy(g:pairs), "MatchRightKey(v:val)")))
-        if (char2nr(getline('.')[col('.')]) <= char2nr(" ") || !empty(filter(copy(g:pairs), "MatchRightKey(v:val)")))
-            let key = GetKey(g:pairs, a:pressed)
-            if !(synIDattr(synID(line("."), col("."), 0), "name") =~? "string")
-                return a:pressed . g:pairs[a:pressed] . "\<Left>"
-            elseif (GetLevelLine([line('.'), strlen(getline(line('.')))], key, a:pressed) <= 0 || key ==# a:pressed) && MatchRightKey(a:pressed)
-                "if the pair is inside a comment but at the and and the pair
-                "is a quote then escape it
-                return "\<Right>"
-            endif
-        else
-            return a:pressed
-        endif
-    elseif HasValue(g:pairs, a:pressed)
-        let key = GetKey(g:pairs, a:pressed)
-        if (GetLevelLine([line('.'), strlen(getline(line('.')))], key, a:pressed) <= 0 || key ==# a:pressed) && MatchRightKey(a:pressed)
-            return "\<Right>"
-        else
-            return a:pressed
-        endif
-    elseif a:pressed == "\<CR>"
-        let key_prev = GetPrevKey()
-        let key_next = ""
-        let line = getline('.')
-        if !empty(key_prev) && searchpos(g:pairs[key_prev]) != [0,0] 
-            let ws = line[col('.'):searchpos(g:pairs[key_prev])[0]-2] 
-            if 1 "matchstr(ws, '\_s*') == ws
-                return "\<CR>\<Esc><<O"
-            endif
-        endif
-        return "\<CR>"
-    else
-        return a:pressed
-    endif
-endfunction
-
-function! Init()
-    for key in keys(g:pairs)
-        if key == '"'
-            execute "inoremap <expr> " . key . " Sub('" . key . "')"
-        else
-            execute 'inoremap <expr> ' . key . ' Sub("' . key . '")'
-        endif
-    endfor
-    for value in Values(g:pairs)
-        if value == '"'
-            execute "inoremap <expr> " . key . " Sub('" . key . "')"
-        else
-            execute 'inoremap <expr> ' . value . ' Sub("' . value . '")'
-        endif
-    endfor
-    execute 'inoremap <expr> <BS> Sub("\<BS>")'
-    execute 'inoremap <expr> <CR> Sub("\<CR>")'
-endfunction
-
-"autocmd BufEnter * :call Init()
+nnoremap <leader>l :call ChangeLanguage()<CR>
 
 "Insert line with enter
 noremap <Enter> o<ESC>
