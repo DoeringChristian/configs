@@ -30,6 +30,8 @@ Plug 'severin-lemaignan/vim-minimap'
 Plug 'justinmk/vim-sneak'
 "Plug 'DoeringChristian/auto-pairs'
 Plug 'DoeringChristian/VimIT'
+"Plug 'zsugabubus/vim-jumpmotion'
+Plug 'easymotion/vim-easymotion'
 
 "coc extensions:
 Plug 'neoclide/coc-tsserver', {'do': 'yarn install --frozen-lockfile'}
@@ -109,6 +111,18 @@ noremap <S-Enter> O<ESC>
 ""smart bracket:
 "inoremap <expr> ; strpart(getline('.'), col('.')-1, 1) == ")" ? "\<Right>;" : ";"
 ""inoremap ;) );
+
+"jumpmotion
+"hi! link JumpMotion Visual
+"call execute("hi! JumpMotion ctermfg=" . synIDattr(hlID('SpellBad'), 'fg#'))
+function! ReturnHighlightTerm(group, term)
+   let output = execute('hi ' . a:group)
+   return matchstr(output, a:term.'=\zs\S*')
+endfunction
+
+"hi! JumpMotion ctermfg=Red guifg=Red guibg=ReturnHighlightTerm(Visual, guibg)  
+"call execute("hi! JumpMotion ctermfg=Red guifg=Red guibg=" . ReturnHighlightTerm("Visual", "guibg") . " ctermbg=" . ReturnHighlightTerm("Visual", "ctermbg") . " gui=bold cterm=bold" )
+"call execute("hi! JumpMotionTail ctermfg=Red guifg=Red guibg=" . ReturnHighlightTerm("Visual", "guibg") . " ctermbg=" . ReturnHighlightTerm("Visual", "ctermbg") . " gui=NONE cterm=NONE" )
 
 "minimap
 let g:minimap_highlight='Visual'
