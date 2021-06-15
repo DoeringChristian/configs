@@ -32,6 +32,7 @@ Plug 'justinmk/vim-sneak'
 Plug 'DoeringChristian/VimIT'
 "Plug 'zsugabubus/vim-jumpmotion'
 Plug 'easymotion/vim-easymotion'
+Plug 'DoeringChristian/MoVim'
 
 "coc extensions:
 Plug 'neoclide/coc-tsserver', {'do': 'yarn install --frozen-lockfile'}
@@ -90,6 +91,8 @@ function! ChangeLanguage()
 endfunction
 
 nnoremap <leader>l :call ChangeLanguage()<CR>
+
+"test-movim
 
 "Insert line with enter
 noremap <Enter> o<ESC>
