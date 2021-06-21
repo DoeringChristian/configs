@@ -92,6 +92,10 @@ set encoding=utf-8
 noremap <RightMouse> <4-LeftMouse>
 noremap <RightDrag> <LeftDrag>
 
+"visual indent
+vmap < <gv
+vmap > >gv
+
 
 "set spellchecking language
 function! ChangeLanguage()
