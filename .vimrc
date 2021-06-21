@@ -33,6 +33,7 @@ Plug 'DoeringChristian/MoVim'
 Plug 'kshenoy/vim-signature'
 Plug 'vim-scripts/CmdlineComplete'
 Plug 'romainl/vim-cool'
+Plug 'vim-scripts/YankRing.vim'
 
 
 "Disabled Plugins
