@@ -94,9 +94,15 @@ nnoremap <leader>l :call ChangeLanguage()<CR>
 
 "test-movim
 
+"fzf
+
+nnoremap <leader><tab> :FZF<CR>
+
 "Insert line with enter
 noremap <Enter> o<ESC>
 noremap <S-Enter> O<ESC>
+
+"MoVim keybindings
 
 "close brackets:
 
