@@ -22,17 +22,25 @@ Plug 'arcticicestudio/nord-vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'puremourning/vimspector'
 Plug 'preservim/nerdtree'
-"Plug 'jiangmiao/auto-pairs'
 Plug 'Krasjet/auto.pairs'
 Plug 'tpope/vim-dispatch'
+Plug 'tpope/vim-surround'
+Plug 'airblade/vim-gitgutter'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'severin-lemaignan/vim-minimap'
-Plug 'justinmk/vim-sneak'
-"Plug 'DoeringChristian/auto-pairs'
 Plug 'DoeringChristian/VimIT'
-"Plug 'zsugabubus/vim-jumpmotion'
-Plug 'easymotion/vim-easymotion'
 Plug 'DoeringChristian/MoVim'
+Plug 'kshenoy/vim-signature'
+Plug 'vim-scripts/CmdlineComplete'
+Plug 'romainl/vim-cool'
+
+
+"Disabled Plugins
+"Plug 'justinmk/vim-sneak'
+"Plug 'DoeringChristian/auto-pairs'
+"Plug 'zsugabubus/vim-jumpmotion'
+"Plug 'easymotion/vim-easymotion'
+"Plug 'jiangmiao/auto-pairs'
 
 "coc extensions:
 Plug 'neoclide/coc-tsserver', {'do': 'yarn install --frozen-lockfile'}
@@ -65,6 +73,7 @@ set expandtab
 set number
 set relativenumber 
 syntax on
+set is hls
 "set virtualedit=all
 let mapleader = " "
 let g:mapleader = " "
@@ -103,6 +112,9 @@ noremap <Enter> o<ESC>
 noremap <S-Enter> O<ESC>
 
 "MoVim keybindings
+
+"vim-cool
+let g:CoolTotalMatches = 1
 
 "close brackets:
 
