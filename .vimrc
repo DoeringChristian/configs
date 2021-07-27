@@ -35,7 +35,7 @@ Plug 'vim-scripts/CmdlineComplete'
 Plug 'romainl/vim-cool'
 Plug 'vim-scripts/YankRing.vim'
 Plug 'dhruvasagar/vim-table-mode'
-
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 
 "Disabled Plugins
 "Plug 'justinmk/vim-sneak'
@@ -163,6 +163,9 @@ let g:vimspector_enable_mappings = 'HUMAN'
 let g:AutoPairsMultilineClose = 0
 
 "Nerd Tree:
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists('s:std_in') |
+    \ execute 'NERDTree' argv()[0] | wincmd p | enew | execute 'cd '.argv()[0] | endif
 autocmd VimEnter * NERDTree | wincmd p
 autocmd BufWinEnter * silent NERDTreeMirror
 " Exit Vim if NERDTree is the only window left.
