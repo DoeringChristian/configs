@@ -36,6 +36,7 @@ Plug 'romainl/vim-cool'
 Plug 'vim-scripts/YankRing.vim'
 Plug 'dhruvasagar/vim-table-mode'
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+Plug 'junegunn/vim-easy-align'
 
 "Disabled Plugins
 "Plug 'justinmk/vim-sneak'
