@@ -103,10 +103,27 @@ vmap > >gv
 function! ChangeLanguage()
     let str = input("Language Code:")
     call execute ("setlocal spell spelllang=" . str)
+    if(!empty(str))
+        call execute ("set complete+=kspell")
+    else
+        call execute ("set complete-=kspell")
+    endif
     return ""
 endfunction
 
 nnoremap <leader>l :call ChangeLanguage()<CR>
+
+" add CTRL+Space for auto completion
+if has("gui_running")
+    " C-Space seems to work under gVim on both Linux and win32
+    inoremap <C-Space> <C-n>
+else " no gui
+  if has("unix")
+    inoremap <Nul> <C-n>
+  else
+  " I have no idea of the name of Ctrl-Space elsewhere
+  endif
+endif
 
 "test-movim
 
