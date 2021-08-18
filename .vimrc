@@ -18,7 +18,7 @@ endif
 set nocompatible
 
 "Polyglot:
-let g:polyglot_disabled = ['']
+let g:polyglot_disabled = ['sensible']
 
 call plug#begin(data_dir . '/plugged')
 
