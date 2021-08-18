@@ -36,7 +36,8 @@ Plug 'airblade/vim-gitgutter'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'severin-lemaignan/vim-minimap'
 Plug 'DoeringChristian/VimIT'
-Plug 'DoeringChristian/MoVim'
+"Plug 'DoeringChristian/MoVim'
+
 Plug 'kshenoy/vim-signature'
 Plug 'vim-scripts/CmdlineComplete'
 Plug 'romainl/vim-cool'
