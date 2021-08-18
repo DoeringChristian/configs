@@ -15,10 +15,17 @@ if empty(glob(data_dir. '/spell/'))
     silent execute '!wget -P ' . data_dir . '/spell/ http://ftp.vim.org/vim/runtime/spell/de.utf-8.sug'
 endif
 
+set nocompatible
+
 call plug#begin(data_dir . '/plugged')
 
-Plug 'vim-airline/vim-airline'
 Plug 'arcticicestudio/nord-vim'
+Plug 'rakr/vim-one'
+"Plug 'tomasr/molokai'
+"Plug 'joshdick/onedark.vim'
+"Plug 'sonph/onehalf', {'rtp': 'vim/'}
+
+Plug 'vim-airline/vim-airline'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'puremourning/vimspector'
 Plug 'preservim/nerdtree'
@@ -38,6 +45,7 @@ Plug 'dhruvasagar/vim-table-mode'
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 Plug 'junegunn/vim-easy-align'
 Plug 'easymotion/vim-easymotion'
+Plug 'sheerun/vim-polyglot'
 
 "Disabled Plugins
 "Plug 'haya14busa/vim-easyoperator-line'
@@ -82,7 +90,9 @@ set is hls
 let mapleader = " "
 let g:mapleader = " "
 map <Space> <leader>
-colorscheme nord
+colorscheme one
+set background=dark
+let g:airline_theme='one'
 
 "true color support
 if (has("termguicolors"))
@@ -302,4 +312,8 @@ nmap ga <Plug>(EasyAlign)
 let g:yankring_zap_keys = ''
 map s <Plug>(easymotion-bd-f)
 map f <Plug>(easymotion-bd-f)
+map <leader>w <Plug>(easymotion-bd-w)
 let g:EasyMotion_smartcase = 1
+
+" polyglot
+let g:polyglot_disabled = ['sensible']
