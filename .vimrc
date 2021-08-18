@@ -1,6 +1,30 @@
+"=========================================
+" My Vimrc:
+"=========================================
 
+"Copyright (c) 2021 Christian Döring
+"
+"Permission is hereby granted, free of charge, to any person obtaining a copy
+"of this software and associated documentation files (the "Software"), to deal
+"in the Software without restriction, including without limitation the rights
+"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+"copies of the Software, and to permit persons to whom the Software is
+"furnished to do so, subject to the following conditions:
+"
+"The above copyright notice and this permission notice shall be included in all
+"copies or substantial portions of the Software.
+"
+"THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+"IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+"AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+"OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+"SOFTWARE.
 
-"vim-plug:
+"=========================================
+" Vim-Plug:
+"=========================================
 "install itself
 let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
 if empty(glob(data_dir . '/autoload/plug.vim'))
@@ -8,7 +32,9 @@ if empty(glob(data_dir . '/autoload/plug.vim'))
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
-"install language packs
+"=========================================
+" Language Packages:
+"=========================================
 if empty(glob(data_dir. '/spell/'))
     silent execute '!mkdir ' . data_dir . '/spell/'
     silent execute '!wget -P ' . data_dir . '/spell/ http://ftp.vim.org/vim/runtime/spell/de.utf-8.spl'
@@ -17,39 +43,79 @@ endif
 
 set nocompatible
 
-"Polyglot:
+"=========================================
+" Polyglot:
+"=========================================
 let g:polyglot_disabled = ['sensible']
 
+"=========================================
+" Vim-Plug:
+"=========================================
 call plug#begin(data_dir . '/plugged')
 
+"=========================================
+" Colorschemes:
+"=========================================
 Plug 'arcticicestudio/nord-vim'
 Plug 'rakr/vim-one'
+Plug 'sonph/onehalf', {'rtp': 'vim/'}
+Plug 'morhetz/gruvbox'
+Plug 'sjl/badwolf'
+"Plug 'joshdick/onedark.vim'
+"Plug 'ghifarit53/tokyonight-vim'
+"Plug 'jacoborus/tender.vim'
+"Plug 'tomasiser/vim-code-dark'
 "Plug 'tomasr/molokai'
 "Plug 'joshdick/onedark.vim'
 "Plug 'sonph/onehalf', {'rtp': 'vim/'}
 
+"=========================================
+" Visual Plugins:
+"=========================================
+Plug 'sheerun/vim-polyglot'
+Plug 'yggdroot/indentline'
+Plug 'severin-lemaignan/vim-minimap'
 Plug 'vim-airline/vim-airline'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'puremourning/vimspector'
+Plug 'airblade/vim-gitgutter'
+Plug 'romainl/vim-cool'
+
+"=========================================
+" Navigation Plugins:
+"=========================================
+Plug 'ctrlpvim/ctrlp.vim'
 Plug 'preservim/nerdtree'
-Plug 'Krasjet/auto.pairs'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'kshenoy/vim-signature'
+
+"=========================================
+" Utility Plugins:
+"=========================================
+Plug 'puremourning/vimspector'
 Plug 'tpope/vim-dispatch'
 Plug 'tpope/vim-surround'
-Plug 'airblade/vim-gitgutter'
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'severin-lemaignan/vim-minimap'
-Plug 'DoeringChristian/VimIT'
-"Plug 'DoeringChristian/MoVim'
-
-Plug 'kshenoy/vim-signature'
-Plug 'vim-scripts/CmdlineComplete'
-Plug 'romainl/vim-cool'
 Plug 'vim-scripts/YankRing.vim'
+
+
+"=========================================
+" Markdown Plugins:
+"=========================================
 Plug 'dhruvasagar/vim-table-mode'
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
-Plug 'junegunn/vim-easy-align'
+
+"=========================================
+" Motion Plugins:
+"=========================================
 Plug 'easymotion/vim-easymotion'
-Plug 'sheerun/vim-polyglot'
+"Plug 'DoeringChristian/MoVim'
+
+"=========================================
+" Auto complete and formating plugins:
+"=========================================
+Plug 'DoeringChristian/VimIT'
+Plug 'junegunn/vim-easy-align'
+Plug 'vim-scripts/CmdlineComplete'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'Krasjet/auto.pairs'
 
 "Disabled Plugins
 "Plug 'haya14busa/vim-easyoperator-line'
@@ -57,8 +123,11 @@ Plug 'sheerun/vim-polyglot'
 "Plug 'DoeringChristian/auto-pairs'
 "Plug 'zsugabubus/vim-jumpmotion'
 "Plug 'jiangmiao/auto-pairs'
+"Plug 'nathanaelkane/vim-indent-guides'
 
-"coc extensions:
+"=========================================
+" Coc Extensions:
+"=========================================
 Plug 'neoclide/coc-tsserver', {'do': 'yarn install --frozen-lockfile'}
 Plug 'clangd/coc-clangd', {'do': 'yarn install --frozen-lockfile'}
 Plug 'voldikss/coc-cmake', {'do': 'yarn install --frozen-lockfile'}
@@ -73,6 +142,9 @@ Plug 'neoclide/coc-vimtex', {'do': 'yarn install --frozen-lockfile'}
 
 call plug#end()
 
+"=========================================
+" Vim:
+"=========================================
 set wildmenu
 set autoindent
 set nostartofline
@@ -94,9 +166,25 @@ set is hls
 let mapleader = " "
 let g:mapleader = " "
 map <Space> <leader>
-colorscheme one
+
+"=========================================
+" Colorscheme:
+"=========================================
+" tokyonight
+let g:tokyonight_style = 'storm' " available: night, storm
+let g:tokyonight_enable_italic = 1
+
+"=========================================
+" Gruvbox:
+"=========================================
+let g:gruvbox_contrast_dark = "soft"
+
+"=========================================
+" Colorscheme: (settings)
+"=========================================
+colorscheme gruvbox
 set background=dark
-let g:airline_theme='one'
+let g:airline_theme='gruvbox'
 
 "true color support
 if (has("termguicolors"))
@@ -140,11 +228,17 @@ else " no gui
   endif
 endif
 
-"test-movim
 
-"fzf
+"=========================================
+" FZF:
+"=========================================
 
-nnoremap <leader><tab> :FZF<CR>
+"nnoremap <leader><tab> :FZF<CR>
+
+"=========================================
+" Ctrl P:
+"=========================================
+let g:ctrlp_map = '<leader><tab>'
 
 "Insert line with enter
 noremap <Enter> o<ESC>
@@ -152,7 +246,9 @@ noremap <S-Enter> O<ESC>
 
 "MoVim keybindings
 
-"vim-cool
+"=========================================
+" Vim-cool:
+"=========================================
 let g:CoolTotalMatches = 1
 
 "close brackets:
@@ -172,7 +268,9 @@ let g:CoolTotalMatches = 1
 "inoremap <expr> ; strpart(getline('.'), col('.')-1, 1) == ")" ? "\<Right>;" : ";"
 ""inoremap ;) );
 
-"jumpmotion
+"=========================================
+" Jumpmotion:
+"=========================================
 "hi! link JumpMotion Visual
 "call execute("hi! JumpMotion ctermfg=" . synIDattr(hlID('SpellBad'), 'fg#'))
 function! ReturnHighlightTerm(group, term)
@@ -184,21 +282,32 @@ endfunction
 "call execute("hi! JumpMotion ctermfg=Red guifg=Red guibg=" . ReturnHighlightTerm("Visual", "guibg") . " ctermbg=" . ReturnHighlightTerm("Visual", "ctermbg") . " gui=bold cterm=bold" )
 "call execute("hi! JumpMotionTail ctermfg=Red guifg=Red guibg=" . ReturnHighlightTerm("Visual", "guibg") . " ctermbg=" . ReturnHighlightTerm("Visual", "ctermbg") . " gui=NONE cterm=NONE" )
 
-"minimap
+"=========================================
+" Minimap:
+"=========================================
 let g:minimap_highlight='Visual'
 
-"vimspector
+"=========================================
+" Vimspector:
+"=========================================
 "nmap <F5> <Plug>
 let g:vimspector_enable_mappings = 'HUMAN'
 "packadd! vimspector
 
-"Autopairs:
+"=========================================
+" Autopairs:
+"=========================================
 let g:AutoPairsMultilineClose = 0
 
-"Nerd Tree:
+"=========================================
+" Nerd Tree:
+"=========================================
+" Start NERDTree when Vim starts with a directory argument.
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists('s:std_in') |
             \ execute 'NERDTree' argv()[0] | wincmd p | enew | execute 'cd '.argv()[0] | endif
+
+
 autocmd VimEnter * NERDTree | wincmd p
 autocmd BufWinEnter * silent NERDTreeMirror
 " Exit Vim if NERDTree is the only window left.
@@ -209,7 +318,10 @@ autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_
             \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
 autocmd BufEnter NERD_tree_* | execute 'normal R'
 
-"Coc:
+
+"=========================================
+" Coc:
+"=========================================
 
 "in case VimPlug not working
 "let g:coc_global_extensions = ['coc-tsserver', 'coc-clangd', 'coc-cmake', 'coc-json', 'coc-python', 'coc-sh', 'coc-xml', 'coc-html', 'coc-css', 'coc-texlab']
@@ -305,19 +417,38 @@ command! -nargs=? Fold :call     CocAction('fold', <f-args>)
 " Add `:OR` command for organize imports of the current buffer.
 command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
 
-"easyalign:
+
+
+
+"=========================================
+" Easyalign:
+"=========================================
 " Start interactive EasyAlign in visual mode (e.g. vipga)
 xmap ga <Plug>(EasyAlign)
 
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
 
-" easymotion:
+"=========================================
+" Easymotion:
+"=========================================
 let g:yankring_zap_keys = ''
-map s <Plug>(easymotion-bd-f)
+"map s <Plug>(easymotion-bd-f)
 map f <Plug>(easymotion-bd-f)
 map <leader>w <Plug>(easymotion-bd-w)
 let g:EasyMotion_smartcase = 1
 
-" polyglot
+"=========================================
+" Polyglot:
+"=========================================
 let g:polyglot_disabled = ['sensible']
+
+"=========================================
+" Indentline:
+"=========================================
+let g:indentLine_char = '┊'
+"let g:indentLine_setColors = 0
+let g:indentLine_defaultGroup = 'Normal'
+" for gruvbox
+let g:indentLine_color_gui = '#504945' 
+let g:indentLine_color_term = 239
