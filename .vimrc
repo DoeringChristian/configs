@@ -17,6 +17,9 @@ endif
 
 set nocompatible
 
+"Polyglot:
+let g:polyglot_disabled = ['']
+
 call plug#begin(data_dir . '/plugged')
 
 Plug 'arcticicestudio/nord-vim'
