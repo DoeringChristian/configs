@@ -177,7 +177,7 @@ let g:tokyonight_enable_italic = 1
 "=========================================
 " Gruvbox:
 "=========================================
-let g:gruvbox_contrast_dark = "soft"
+let g:gruvbox_contrast_dark = "hard"
 
 "=========================================
 " Colorscheme: (settings)
