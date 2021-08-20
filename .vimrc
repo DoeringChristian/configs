@@ -22,6 +22,19 @@
 "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 "SOFTWARE.
 
+
+"=========================================
+" Requirements:
+"=========================================
+" - Vim 8+
+"   - Python support
+" - nodejs
+" - yarn
+" - clang
+" - clangd/llvm
+" - cmake
+" - curl
+
 "=========================================
 " Vim-Plug:
 "=========================================
@@ -56,7 +69,7 @@ call plug#begin(data_dir . '/plugged')
 "=========================================
 " Colorschemes:
 "=========================================
-Plug 'arcticicestudio/nord-vim'
+Plug 'arcticicestudio/nord-vim' 
 Plug 'rakr/vim-one'
 Plug 'sonph/onehalf', {'rtp': 'vim/'}
 Plug 'morhetz/gruvbox'
@@ -72,50 +85,54 @@ Plug 'sjl/badwolf'
 "=========================================
 " Visual Plugins:
 "=========================================
-Plug 'sheerun/vim-polyglot'
-Plug 'yggdroot/indentline'
-Plug 'severin-lemaignan/vim-minimap'
-Plug 'vim-airline/vim-airline'
-Plug 'airblade/vim-gitgutter'
-Plug 'romainl/vim-cool'
+Plug 'sheerun/vim-polyglot'                                 " Polyglot for better syntax highlighting.
+Plug 'yggdroot/indentline'                                  " Adds lines indecating indentation.
+Plug 'severin-lemaignan/vim-minimap'                        " Adds minimap.
+Plug 'vim-airline/vim-airline'                              " Adds status bar at the bottom.
+Plug 'airblade/vim-gitgutter'                               " Git integration.
+Plug 'romainl/vim-cool'                                     " Removes highlights after search.
 
-"=========================================
+" =========================================
 " Navigation Plugins:
-"=========================================
-Plug 'ctrlpvim/ctrlp.vim'
-Plug 'preservim/nerdtree'
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'kshenoy/vim-signature'
+" =========================================
+Plug 'ctrlpvim/ctrlp.vim'                                   " Fuzzy search.
+Plug 'preservim/nerdtree'                                   " Tree on the left side of the screen.
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }         " Fuzzy search.
+Plug 'junegunn/fzf.vim'
+Plug 'kshenoy/vim-signature'                                " Adds bookmark indicator.
 
-"=========================================
+" =========================================
 " Utility Plugins:
-"=========================================
-Plug 'puremourning/vimspector'
-Plug 'tpope/vim-dispatch'
-Plug 'tpope/vim-surround'
-Plug 'vim-scripts/YankRing.vim'
+" =========================================
+Plug 'puremourning/vimspector'                              " Adds debugger to vim.
+Plug 'tpope/vim-dispatch'                                   " Run makefiles.
+Plug 'vim-scripts/YankRing.vim'                             " Keeps yank history.
+Plug 'sgur/ctrlp-extensions.vim'                            " Integrates CtrlP with YankRing.
+" Plug 'svermeulen/vim-yoink'
 
-
-"=========================================
+" =========================================
 " Markdown Plugins:
-"=========================================
-Plug 'dhruvasagar/vim-table-mode'
-Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+" =========================================
+Plug 'dhruvasagar/vim-table-mode'                           " Markdown table auto alignment.
+                                                            " Adds markdown preview for vim.
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']} 
 
-"=========================================
+" =========================================
 " Motion Plugins:
-"=========================================
-Plug 'easymotion/vim-easymotion'
-"Plug 'DoeringChristian/MoVim'
+" =========================================
+Plug 'easymotion/vim-easymotion'                            " Adds easy shortcuts.
+"Plug 'pechorin/any-jump.vim'                                " Jump to definitions
+" Plug 'DoeringChristian/MoVim'
 
-"=========================================
+" =========================================
 " Auto complete and formating plugins:
-"=========================================
-Plug 'DoeringChristian/VimIT'
-Plug 'junegunn/vim-easy-align'
-Plug 'vim-scripts/CmdlineComplete'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'Krasjet/auto.pairs'
+" =========================================
+Plug 'DoeringChristian/VimIT'                               " Inline Templates/Snippets.
+Plug 'junegunn/vim-easy-align'                              " Adds alignment functionality.
+Plug 'vim-scripts/CmdlineComplete'                          " Allows completion in : CmdLine.
+Plug 'neoclide/coc.nvim', {'branch': 'release'}             " Adds LSP integration.
+Plug 'Krasjet/auto.pairs'                                   " Autopairs for brackets etc.
+Plug 'tpope/vim-surround'                                   " Operations on surrounding characters.
 
 "Disabled Plugins
 "Plug 'haya14busa/vim-easyoperator-line'
@@ -158,7 +175,7 @@ set softtabstop=4
 set autoindent
 set smartindent
 set expandtab
-set number
+set number 
 set relativenumber 
 syntax on
 set is hls
@@ -193,6 +210,9 @@ endif
 
 set encoding=utf-8
 
+"=========================================
+" Custom:
+"=========================================
 "mouse block select
 noremap <RightMouse> <4-LeftMouse>
 noremap <RightDrag> <LeftDrag>
@@ -228,23 +248,33 @@ else " no gui
   endif
 endif
 
+"Insert line with enter
+noremap <Enter> o<ESC>
+noremap <S-Enter> O<ESC>
 
 "=========================================
 " FZF:
 "=========================================
 
-"nnoremap <leader><tab> :FZF<CR>
+nnoremap <leader><tab> :FZF<CR>
+nnoremap <leader><s-tab> :Ag<CR>
+nnoremap <leader>s :Lines<CR>
+command! -bang -nargs=* Rg
+  \ call fzf#vim#grep(
+  \   'rg --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
+  \   fzf#vim#with_preview(), <bang>0)
 
 "=========================================
 " Ctrl P:
 "=========================================
-let g:ctrlp_map = '<leader><tab>'
+"let g:ctrlp_map = '<leader><tab>'
+let g:ctrlp_prompt_mappings = {
+            \ 'PrtSelectMove("j")':   ['<c-j>', '<down>', '<s-tab>'],
+            \ 'PrtSelectMove("k")':   ['<c-k>', '<up>', '<tab>'],
+            \ }
+map <leader>p :CtrlPYankring<cr>
+"map <leader>s :CtrlPLine<cr>
 
-"Insert line with enter
-noremap <Enter> o<ESC>
-noremap <S-Enter> O<ESC>
-
-"MoVim keybindings
 
 "=========================================
 " Vim-cool:
@@ -435,7 +465,12 @@ nmap ga <Plug>(EasyAlign)
 let g:yankring_zap_keys = ''
 "map s <Plug>(easymotion-bd-f)
 map f <Plug>(easymotion-bd-f)
+nmap <leader>f <Plug>(easymotion-overwin-f)
 map <leader>w <Plug>(easymotion-bd-w)
+map <leader>b <Plug>(easymotion-bd-w)
+map <leader>j <Plug>(easymotion-j)
+map <leader>k <Plug>(easymotion-k)
+"nmap <Leader>w <Plug>(easymotion-overwin-w)
 let g:EasyMotion_smartcase = 1
 
 "=========================================
@@ -452,3 +487,18 @@ let g:indentLine_defaultGroup = 'Normal'
 " for gruvbox
 let g:indentLine_color_gui = '#504945' 
 let g:indentLine_color_term = 239
+
+"=========================================
+" Yoink:
+"=========================================
+"nmap <c-p> <plug>(YoinkPostPasteSwapBack)
+"nmap <c-n> <plug>(YoinkPostPasteSwapForward)
+"nmap <leader>p <plug>(YoinkPostPasteSwapBack)
+"nmap <leader>n <plug>(YoinkPostPasteSwapForward)
+"nmap p <plug>(YoinkPaste_p)
+"nmap P <plug>(YoinkPaste_P)
+"nmap gp <plug>(YoinkPaste_gp)
+"nmap gP <plug>(YoinkPaste_gP)
+"nmap [y <plug>(YoinkRotateBack)
+"nmap ]y <plug>(YoinkRotateForward)
+
