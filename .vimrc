@@ -106,9 +106,9 @@ Plug 'kshenoy/vim-signature'                                " Adds bookmark indi
 " =========================================
 Plug 'puremourning/vimspector'                              " Adds debugger to vim.
 Plug 'tpope/vim-dispatch'                                   " Run makefiles.
-Plug 'vim-scripts/YankRing.vim'                             " Keeps yank history.
 Plug 'sgur/ctrlp-extensions.vim'                            " Integrates CtrlP with YankRing.
-" Plug 'svermeulen/vim-yoink'
+Plug 'vim-scripts/YankRing.vim'                             " Keeps yank history.
+"Plug 'svermeulen/vim-yoink'
 
 " =========================================
 " Markdown Plugins:
@@ -255,26 +255,32 @@ noremap <S-Enter> O<ESC>
 "=========================================
 " FZF:
 "=========================================
+" <c-t>: tab_split,
+" <c-x>: split,
+" <c-v>: vsplit
 
 nnoremap <leader><tab> :FZF<CR>
-nnoremap <leader><s-tab> :Ag<CR>
+nnoremap <leader><s-tab> :Rg<CR>
+nnoremap <leader>rg :Rg<CR>
+nnoremap <leader>ag :Ag<CR>
 nnoremap <leader>s :Lines<CR>
+let g:fzf_layout = { 'down': '~40%' }
 command! -bang -nargs=* Rg
   \ call fzf#vim#grep(
   \   'rg --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
   \   fzf#vim#with_preview(), <bang>0)
 
 "=========================================
-" Ctrl P:
+" CtrlP:
 "=========================================
 "let g:ctrlp_map = '<leader><tab>'
 let g:ctrlp_prompt_mappings = {
             \ 'PrtSelectMove("j")':   ['<c-j>', '<down>', '<s-tab>'],
             \ 'PrtSelectMove("k")':   ['<c-k>', '<up>', '<tab>'],
             \ }
-map <leader>p :CtrlPYankring<cr>
+" Update of yankring is necesarray
+map <leader>p :call yankring#collect() \| CtrlPYankring<cr>
 "map <leader>s :CtrlPLine<cr>
-
 
 "=========================================
 " Vim-cool:
@@ -346,6 +352,7 @@ autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTr
 " If another buffer tries to replace NERDTree, put it in the other window, and bring back NERDTree.
 autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
             \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
+" Auto refresh on enter.
 autocmd BufEnter NERD_tree_* | execute 'normal R'
 
 
