@@ -179,6 +179,8 @@ set number
 set relativenumber 
 syntax on
 set is hls
+set cursorline
+set cursorcolumn
 "set virtualedit=all
 let mapleader = " "
 let g:mapleader = " "
@@ -479,6 +481,7 @@ map <leader>j <Plug>(easymotion-j)
 map <leader>k <Plug>(easymotion-k)
 "nmap <Leader>w <Plug>(easymotion-overwin-w)
 let g:EasyMotion_smartcase = 1
+let g:EasyMotion_startofline = 0 " keep cursor column when JK motion
 
 "=========================================
 " Polyglot:
