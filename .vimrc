@@ -134,6 +134,11 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}             " Adds LSP integrati
 Plug 'Krasjet/auto.pairs'                                   " Autopairs for brackets etc.
 Plug 'tpope/vim-surround'                                   " Operations on surrounding characters.
 
+" =========================================
+" Language specific plugins:
+" =========================================
+"Plug 'lervag/vimtex'
+
 "Disabled Plugins
 "Plug 'haya14busa/vim-easyoperator-line'
 "Plug 'justinmk/vim-sneak'
@@ -495,6 +500,12 @@ let g:polyglot_disabled = ['sensible']
 " Indentline:
 "=========================================
 let g:indentLine_char = '┊'
+
+let g:indentLine_conceallevel = 1
+let g:indentLine_setConceal = 0
+let g:indentLine_concealcursor = 'inc'
+set conceallevel=1
+
 "let g:indentLine_setColors = 0
 let g:indentLine_defaultGroup = 'Normal'
 " for gruvbox
