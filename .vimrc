@@ -371,17 +371,17 @@ function! NETRW_split_below()
 endfunction
 
 function! NETRW_tab()
-    :call <SNR>116_NetrwSplit(5)
+    :call netrw#Call("NetrwSplit", 5)
     let g:path=expand('%:p')
     :q!
-    :tabedit g:path
-    :call NETRW_toggle()
+    :execute("tabedit " . g:path)
+    :call NETRW_displ()
 endfunction
 
 " netrw toggle function
-let g:netrw_open = 0
+let t:netrw_open = 0
 function! NETRW_toggle()
-    if(g:netrw_open)
+    if(t:netrw_open)
         let i = bufnr("$")
         while(i >= 1)
             if(getbufvar(i, "&filetype") == "netrw")
@@ -389,17 +389,21 @@ function! NETRW_toggle()
             endif
             let i-=1
         endwhile
-        let g:netrw_open = 0
+        let t:netrw_open = 0
     else
-        let g:netrw_open = 1
+        let t:netrw_open = 1
         silent Lexplore
+        :wincmd l
     endif
 endfunction
 
 function! NETRW_displ()
-    if(!g:netrw_open)
-        let g:netrw_open = 1
+    if(t:netrw_open)
+
+    else
+        let t:netrw_open = 1
         silent Lexplore
+        :wincmd l
     endif
 endfunction
 
@@ -421,6 +425,8 @@ nnoremap <silent> <C-f> :call NETRW_toggle()<CR>
 
 autocmd WinEnter * if(winnr('$') == 1 && getbufvar(winbufnr(winnr()), "&filetype") == "netrw" || &buftype == 'quickfix') |q| endif
 "autocmd WinEnter * :call NETRW_displ()
+autocmd TabEnter * :let t:netrw_open = 0
+autocmd VimEnter * :call NETRW_displ()
 
 
 "=========================================
