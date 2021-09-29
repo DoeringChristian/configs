@@ -100,6 +100,7 @@ Plug 'ctrlpvim/ctrlp.vim'                                   " Fuzzy search.
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }         " Fuzzy search.
 Plug 'junegunn/fzf.vim'
 Plug 'kshenoy/vim-signature'                                " Adds bookmark indicator.
+Plug 'lambdalisue/fern.vim'
 
 " =========================================
 " Utility Plugins:
@@ -344,111 +345,54 @@ let g:AutoPairsMultilineClose = 0
 
 
 "=========================================
-" NETRW:
+" Fern:
 "=========================================
+nnoremap <C-f> :Fern . -reveal=% -drawer -toggle <CR>
 
-let g:netrw_banner = 0
-let g:netrw_liststyle = 3
-let g:netrw_browse_split = 4
-let g:netrw_winsize = 20
+function! s:init_fern() abort
+    nmap  <buffer>      o    <Plug>(fern-action-open:edit)
+    nmap  <buffer>      go   <Plug>(fern-action-open:edit)<C-w>p
+    nmap  <buffer>      t    <Plug>(fern-action-open:tabedit)
+    nmap  <buffer>      T    <Plug>(fern-action-open:tabedit)gT
+    nmap  <buffer>      s    <Plug>(fern-action-open:split)
+    nmap  <buffer>      v    <Plug>(fern-action-open:vsplit)
+    nmap  <buffer>      ma   <Plug>(fern-action-new-path)
+    nmap  <buffer>      mm   <Plug>(fern-action-move)
+    nmap  <buffer>      md   <Plug>(fern-action-remove)
+    nmap  <buffer>      mc   <Plug>(fern-action-copy)
+    nmap  <buffer>      <CR> <Plug>(fern-action-enter)
+    nmap  <buffer>      <BS> <Plug>(fern-action-leave)
+    nmap  <buffer>      P    gg
+    nmap <buffer> <Plug>(fern-action-open) <Plug>(fern-action-open:select)
+    nnoremap <buffer> zz zz
 
-function! NETRW_split_right()
-    ":normal! v
-    :call netrw#Call("NetrwSplit", 5)
-    let g:path=expand('%:p')
-    :q!
-    :wincmd l
-    execute 'belowright vnew' g:path
+    nmap <buffer> r <Plug>(fern-action-reload)
+    nmap <buffer> R gg<Plug>(fern-action-reload)<C-o>
+    nmap <buffer> cd <Plug>(fern-action-cd)
+    nmap <buffer> CD gg<Plug>(fern-action-cd)<C-o>
+
+    nmap <buffer> I <Plug>(fern-action-hide-toggle)
+    nmap <buffer> H <Plug>(fern-action-hidden:toggle)
+
+    nmap <buffer> q :<C-u>quit<CR>
 endfunction
 
-function! NETRW_split_below()
-    ":normal! v
-    :call netrw#Call("NetrwSplit", 5)
-    let g:path=expand('%:p')
-    :q!
-    :wincmd l
-    execute 'belowright new' g:path
-endfunction
-
-function! NETRW_tab()
-    :call netrw#Call("NetrwSplit", 5)
-    let g:path=expand('%:p')
-    :q!
-    :execute("tabedit " . g:path)
-    :call NETRW_displ()
-endfunction
-
-" netrw toggle function
-let t:netrw_open = 0
-function! NETRW_toggle()
-    if(t:netrw_open)
-        let i = bufnr("$")
-        while(i >= 1)
-            if(getbufvar(i, "&filetype") == "netrw")
-                silent exe "bwipeout" . i
-            endif
-            let i-=1
-        endwhile
-        let t:netrw_open = 0
-    else
-        let t:netrw_open = 1
-        silent Lexplore
-        :wincmd l
-    endif
-endfunction
-
-function! NETRW_displ()
-    if(t:netrw_open)
-
-    else
-        let t:netrw_open = 1
-        silent Lexplore
-        :wincmd l
-    endif
-endfunction
-
-" netrw buffer mappings
-function! NETRW_mappings()
-    nnoremap <buffer> <C-l> <C-w>l
-    nnoremap <buffer> v :call NETRW_split_right()<CR>
-    nnoremap <buffer> h :call NETRW_split_below()<CR>
-    nnoremap <buffer> t :call NETRW_tab()<CR>
-endfunction
-
-augroup netrw_mappings
-    autocmd!
-    autocmd filetype netrw call NETRW_mappings()
+augroup fern-custom
+    autocmd! *
+    autocmd FileType fern call s:init_fern()
 augroup END
 
-" netrw global mappings
-nnoremap <silent> <C-f> :call NETRW_toggle()<CR>
+augroup fern-startup
+    autocmd! *
+    autocmd VimEnter * Fern . -reveal=% -drawer -toggle
+augroup END
 
-autocmd WinEnter * if(winnr('$') == 1 && getbufvar(winbufnr(winnr()), "&filetype") == "netrw" || &buftype == 'quickfix') |q| endif
-"autocmd WinEnter * :call NETRW_displ()
-autocmd TabEnter * :let t:netrw_open = 0
-autocmd VimEnter * :call NETRW_displ()
-
-
-"=========================================
-" Nerd Tree:
-"=========================================
-" Start NERDTree when Vim starts with a directory argument.
-"autocmd StdinReadPre * let s:std_in=1
-"autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists('s:std_in') |
-"            \ execute 'NERDTree' argv()[0] | wincmd p | enew | execute 'cd '.argv()[0] | endif
-"
-"
-"autocmd VimEnter * NERDTree | wincmd p
-"autocmd BufWinEnter * silent NERDTreeMirror
-"" Exit Vim if NERDTree is the only window left.
-"autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() |
-"            \ quit | endif
-"" If another buffer tries to replace NERDTree, put it in the other window, and bring back NERDTree.
-"autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
-"            \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
-"" Auto refresh on enter.
-"autocmd BufEnter NERD_tree_* | execute 'normal R'
-
+let g:fern#mark_symbol                       = '●'
+let g:fern#renderer#default#collapsed_symbol = '▷ '
+let g:fern#renderer#default#expanded_symbol  = '▼ '
+let g:fern#renderer#default#leading          = ' '
+let g:fern#renderer#default#leaf_symbol      = ' '
+let g:fern#renderer#default#root_symbol      = '~ '
 
 "=========================================
 " Coc:
