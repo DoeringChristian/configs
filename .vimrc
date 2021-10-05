@@ -360,7 +360,8 @@ function! s:init_fern() abort
     nmap  <buffer>      mm   <Plug>(fern-action-move)
     nmap  <buffer>      md   <Plug>(fern-action-remove)
     nmap  <buffer>      mc   <Plug>(fern-action-copy)
-    nmap  <buffer>      <CR> <Plug>(fern-action-enter)
+    nmap  <buffer>      <CR> <Plug>(fern-action-open-or-expand)
+    nmap  <buffer>      <leader><CR> <Plug>(fern-action-enter)
     nmap  <buffer>      <BS> <Plug>(fern-action-leave)
     nmap  <buffer>      P    gg
     nmap <buffer> <Plug>(fern-action-open) <Plug>(fern-action-open:select)
@@ -384,7 +385,7 @@ augroup END
 
 augroup fern-startup
     autocmd! *
-    autocmd VimEnter * Fern . -reveal=% -drawer -toggle
+    "autocmd VimEnter * Fern . -reveal=% -drawer -toggle
 augroup END
 
 let g:fern#mark_symbol                       = '●'
