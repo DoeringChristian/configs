@@ -370,7 +370,8 @@ function! s:init_fern() abort
     nmap  <buffer>      md   <Plug>(fern-action-remove)
     nmap  <buffer>      mc   <Plug>(fern-action-copy)
     nmap  <buffer>      <CR> <Plug>(fern-action-open-or-expand)
-    nmap  <buffer>      <leader><CR> <Plug>(fern-action-enter) <Plug>(fern-action-cd)
+    nmap  <buffer>      <leader><CR> <Plug>(fern-action-enter)
+    "nmap  <buffer>      <leader><CR> <Plug>(fern-action-enter) <Plug>(fern-action-cd)
     nmap  <buffer>      <BS> <Plug>(fern-action-leave)
     nmap  <buffer>      P    gg
     nmap <buffer> <Plug>(fern-action-open) <Plug>(fern-action-open:select)
