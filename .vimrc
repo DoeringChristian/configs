@@ -188,6 +188,7 @@ syntax on
 set is hls
 set cursorline
 set cursorcolumn
+set noautochdir
 "set virtualedit=all
 let mapleader = " "
 let g:mapleader = " "
@@ -264,7 +265,7 @@ noremap <S-Enter> O<ESC>
 " Init function
 function! s:vim_init()
     try
-        execute(':cd %:p:h')
+        execute(':tcd %:p:h')
     catch
     endtry
 endfunction
@@ -361,6 +362,8 @@ let g:AutoPairsMultilineClose = 0
 "=========================================
 nnoremap <C-f> :Fern . -reveal=% -drawer -toggle <CR>
 
+command Ferncd silent execute("windo tcd " . getcwd())
+
 function! s:init_fern() abort
     nmap  <buffer>      o    <Plug>(fern-action-open:edit)
     nmap  <buffer>      go   <Plug>(fern-action-open:edit)<C-w>p
@@ -374,8 +377,8 @@ function! s:init_fern() abort
     nmap  <buffer>      md   <Plug>(fern-action-remove)
     nmap  <buffer>      mc   <Plug>(fern-action-copy)
     nmap  <buffer>      <CR> <Plug>(fern-action-open-or-expand)
-    nmap  <buffer>      <leader><CR> <Plug>(fern-action-enter)
-    "nmap  <buffer>      <leader><CR> <Plug>(fern-action-enter) <Plug>(fern-action-tcd)
+    "nmap  <buffer>      <leader><CR> <Plug>(fern-action-enter)
+    nmap  <buffer>      <leader><CR>  <Plug>(fern-action-enter) <Plug>(fern-action-tcd)
     nmap  <buffer>      <BS> <Plug>(fern-action-leave)
     nmap  <buffer>      P    gg
     nmap <buffer> <Plug>(fern-action-open) <Plug>(fern-action-open:select)
@@ -392,6 +395,11 @@ function! s:init_fern() abort
     nmap <buffer> q :<C-u>quit<CR>
 
     call feedkeys("\<Plug>(fern-action-tcd:root)")
+
+    " workaround for updating every window to tabpath
+    let curwin = winnr()
+    silent execute("windo tcd " . getcwd())
+    execute curwin . 'wincmd w'
 endfunction
 
 augroup fern-custom
