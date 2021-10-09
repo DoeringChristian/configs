@@ -101,6 +101,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }         " Fuzzy search.
 Plug 'junegunn/fzf.vim'
 Plug 'kshenoy/vim-signature'                                " Adds bookmark indicator.
 Plug 'lambdalisue/fern.vim'
+Plug 'lambdalisue/fern-hijack.vim'
 
 " =========================================
 " Utility Plugins:
@@ -260,6 +261,13 @@ endif
 noremap <Enter> o<ESC>
 noremap <S-Enter> O<ESC>
 
+" Init function
+function! s:vim_init()
+    "execute(':cd %:p:h')
+endfunction
+
+autocmd! VimEnter * call s:vim_init()
+
 "=========================================
 " FZF:
 "=========================================
@@ -355,13 +363,14 @@ function! s:init_fern() abort
     nmap  <buffer>      t    <Plug>(fern-action-open:tabedit)
     nmap  <buffer>      T    <Plug>(fern-action-open:tabedit)gT
     nmap  <buffer>      s    <Plug>(fern-action-open:split)
+    nmap  <buffer>      i    <Plug>(fern-action-open:split)
     nmap  <buffer>      v    <Plug>(fern-action-open:vsplit)
     nmap  <buffer>      ma   <Plug>(fern-action-new-path)
     nmap  <buffer>      mm   <Plug>(fern-action-move)
     nmap  <buffer>      md   <Plug>(fern-action-remove)
     nmap  <buffer>      mc   <Plug>(fern-action-copy)
     nmap  <buffer>      <CR> <Plug>(fern-action-open-or-expand)
-    nmap  <buffer>      <leader><CR> <Plug>(fern-action-enter)
+    nmap  <buffer>      <leader><CR> <Plug>(fern-action-enter) <Plug>(fern-action-cd)
     nmap  <buffer>      <BS> <Plug>(fern-action-leave)
     nmap  <buffer>      P    gg
     nmap <buffer> <Plug>(fern-action-open) <Plug>(fern-action-open:select)
@@ -376,6 +385,8 @@ function! s:init_fern() abort
     nmap <buffer> H <Plug>(fern-action-hidden:toggle)
 
     nmap <buffer> q :<C-u>quit<CR>
+
+    call feedkeys("\<Plug>(fern-action-tcd:root)")
 endfunction
 
 augroup fern-custom
