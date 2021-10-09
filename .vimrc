@@ -263,7 +263,10 @@ noremap <S-Enter> O<ESC>
 
 " Init function
 function! s:vim_init()
-    "execute(':cd %:p:h')
+    try
+        execute(':cd %:p:h')
+    catch
+    endtry
 endfunction
 
 autocmd! VimEnter * call s:vim_init()
@@ -276,15 +279,16 @@ autocmd! VimEnter * call s:vim_init()
 " <c-v>: vsplit
 
 nnoremap <leader><tab> :FZF<CR>
-nnoremap <leader><s-tab> :Rg<CR>
-nnoremap <leader>rg :Rg<CR>
-nnoremap <leader>ag :Ag<CR>
+nnoremap <leader><s-tab> :Rgnf<CR>
+nnoremap <leader>rg :Rgnf<CR>
+nnoremap <leader>ag :Agnf<CR>
 nnoremap <leader>s :Lines<CR>
 let g:fzf_layout = { 'down': '~40%' }
-command! -bang -nargs=* Rg
+command! -bang -nargs=* Rgnf
   \ call fzf#vim#grep(
   \   'rg --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
-  \   fzf#vim#with_preview(), <bang>0)
+  \   fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}), <bang>0)
+command! -bang -nargs=* Agnf call fzf#vim#ag(<q-args>, fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}), <bang>0)
 
 "=========================================
 " CtrlP:
@@ -371,7 +375,7 @@ function! s:init_fern() abort
     nmap  <buffer>      mc   <Plug>(fern-action-copy)
     nmap  <buffer>      <CR> <Plug>(fern-action-open-or-expand)
     nmap  <buffer>      <leader><CR> <Plug>(fern-action-enter)
-    "nmap  <buffer>      <leader><CR> <Plug>(fern-action-enter) <Plug>(fern-action-cd)
+    "nmap  <buffer>      <leader><CR> <Plug>(fern-action-enter) <Plug>(fern-action-tcd)
     nmap  <buffer>      <BS> <Plug>(fern-action-leave)
     nmap  <buffer>      P    gg
     nmap <buffer> <Plug>(fern-action-open) <Plug>(fern-action-open:select)
