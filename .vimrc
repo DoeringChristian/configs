@@ -152,8 +152,9 @@ Plug 'tpope/vim-surround'                                   " Operations on surr
 "=========================================
 " Coc Extensions:
 "=========================================
+" Requires npm/node and yarn
 Plug 'neoclide/coc-tsserver', {'do': 'yarn install --frozen-lockfile'}
-Plug 'clangd/coc-clangd', {'do': 'yarn install --frozen-lockfile'}
+Plug 'clangd/coc-clangd', {'do': 'yarn install --frozen-lockfile'} " requires clang and llvm or clangd
 Plug 'voldikss/coc-cmake', {'do': 'yarn install --frozen-lockfile'}
 Plug 'neoclide/coc-json', {'do': 'yarn install --frozen-lockfile'}
 Plug 'neoclide/coc-python', {'do': 'yarn install --frozen-lockfile'}
