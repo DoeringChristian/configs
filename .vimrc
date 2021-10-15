@@ -110,6 +110,7 @@ Plug 'puremourning/vimspector'                              " Adds debugger to v
 Plug 'tpope/vim-dispatch'                                   " Run makefiles.
 Plug 'sgur/ctrlp-extensions.vim'                            " Integrates CtrlP with YankRing.
 Plug 'vim-scripts/YankRing.vim'                             " Keeps yank history.
+Plug 'vimwiki/vimwiki'
 "Plug 'svermeulen/vim-yoink'
 
 " =========================================
@@ -309,37 +310,6 @@ map <leader>p :call yankring#collect() \| CtrlPYankring<cr>
 " Vim-cool:
 "=========================================
 let g:CoolTotalMatches = 1
-
-"close brackets:
-
-"inoremap <expr> "  strpart(getline('.'), col('.')-1, 1) == "\"" ? ( strpart(getline('.'), col('.')-2, 1) == "\\" ? "\"" : "\<Right>" ) : "\"\"\<Left>"
-"inoremap <expr> '  strpart(getline('.'), col('.')-1, 1) == "\'" ? ( strpart(getline('.'), col('.')-2, 1) == "\\" ? "\'" : "\<Right>" ) : "\'\'\<Left>"
-"inoremap ( ()<left>
-"inoremap <expr> )  strpart(getline('.'), col('.')-1, 1) == ")" ? "\<Right>" : ")"
-"inoremap [ []<left>
-"inoremap <expr> ]  strpart(getline('.'), col('.')-1, 1) == "]" ? "\<Right>" : "]"
-"inoremap { {}<left>
-""inoremap {<CR> {<CR><Tab><BS>}<ESC>O
-"inoremap {<CR> {<CR><CR>}<UP><TAB>
-"inoremap <expr> }  strpart(getline('.'), col('.')-1, 1) == "}" ? "\<Right>" : "}"
-"inoremap {;<CR> {<CR>};<ESC>O
-""smart bracket:
-"inoremap <expr> ; strpart(getline('.'), col('.')-1, 1) == ")" ? "\<Right>;" : ";"
-""inoremap ;) );
-
-"=========================================
-" Jumpmotion:
-"=========================================
-"hi! link JumpMotion Visual
-"call execute("hi! JumpMotion ctermfg=" . synIDattr(hlID('SpellBad'), 'fg#'))
-function! ReturnHighlightTerm(group, term)
-   let output = execute('hi ' . a:group)
-   return matchstr(output, a:term.'=\zs\S*')
-endfunction
-
-"hi! JumpMotion ctermfg=Red guifg=Red guibg=ReturnHighlightTerm(Visual, guibg)  
-"call execute("hi! JumpMotion ctermfg=Red guifg=Red guibg=" . ReturnHighlightTerm("Visual", "guibg") . " ctermbg=" . ReturnHighlightTerm("Visual", "ctermbg") . " gui=bold cterm=bold" )
-"call execute("hi! JumpMotionTail ctermfg=Red guifg=Red guibg=" . ReturnHighlightTerm("Visual", "guibg") . " ctermbg=" . ReturnHighlightTerm("Visual", "ctermbg") . " gui=NONE cterm=NONE" )
 
 "=========================================
 " Minimap:
@@ -574,16 +544,8 @@ let g:indentLine_color_gui = '#504945'
 let g:indentLine_color_term = 239
 
 "=========================================
-" Yoink:
+" VimWiki:
 "=========================================
-"nmap <c-p> <plug>(YoinkPostPasteSwapBack)
-"nmap <c-n> <plug>(YoinkPostPasteSwapForward)
-"nmap <leader>p <plug>(YoinkPostPasteSwapBack)
-"nmap <leader>n <plug>(YoinkPostPasteSwapForward)
-"nmap p <plug>(YoinkPaste_p)
-"nmap P <plug>(YoinkPaste_P)
-"nmap gp <plug>(YoinkPaste_gp)
-"nmap gP <plug>(YoinkPaste_gP)
-"nmap [y <plug>(YoinkRotateBack)
-"nmap ]y <plug>(YoinkRotateForward)
-
+let g:vimwiki_list = [{'path': '~/.vimwiki/',
+                      \ 'syntax': 'markdown', 'ext': '.md'}]
+let g:vimwiki_map_prefix = '<Leader>n'
