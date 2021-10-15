@@ -187,8 +187,9 @@ set number
 set relativenumber 
 syntax on
 set is hls
-set cursorline
-set cursorcolumn
+" Disabled due to lag
+"set cursorline
+"set cursorcolumn
 set noautochdir
 "set virtualedit=all
 let mapleader = " "
