@@ -110,7 +110,8 @@ Plug 'puremourning/vimspector'                              " Adds debugger to v
 Plug 'tpope/vim-dispatch'                                   " Run makefiles.
 Plug 'sgur/ctrlp-extensions.vim'                            " Integrates CtrlP with YankRing.
 Plug 'vim-scripts/YankRing.vim'                             " Keeps yank history.
-Plug 'vimwiki/vimwiki'
+Plug 'vimwiki/vimwiki'                                      " Wiki in vim (<leader>nt)
+Plug 'tpope/vim-fugitive'                                   " Git integration
 "Plug 'svermeulen/vim-yoink'
 
 " =========================================
