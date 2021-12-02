@@ -39,7 +39,7 @@
 " Vim-Plug:
 "=========================================
 "install itself
-let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
+let data_dir = has('nvim') ? stdpath('data') . '/site' : $HOME . '/.vim'
 if empty(glob(data_dir . '/autoload/plug.vim'))
   silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
@@ -197,6 +197,13 @@ set noautochdir
 let mapleader = " "
 let g:mapleader = " "
 map <Space> <leader>
+
+let undo_dir = data_dir . "/undodir"
+if(!isdirectory(undo_dir))
+    call mkdir(undo_dir)
+endif
+exe 'set undodir=' . undo_dir
+set undofile
 
 "=========================================
 " Colorscheme:
@@ -550,3 +557,7 @@ let g:indentLine_color_term = 239
 let g:vimwiki_list = [{'path': '~/.vimwiki/',
                       \ 'syntax': 'markdown', 'ext': '.md'}]
 let g:vimwiki_map_prefix = '<Leader>n'
+
+"=========================================
+" Custom:
+"=========================================
