@@ -137,6 +137,8 @@ Plug 'vim-scripts/CmdlineComplete'                          " Allows completion 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}             " Adds LSP integration.
 Plug 'Krasjet/auto.pairs'                                   " Autopairs for brackets etc.
 Plug 'tpope/vim-surround'                                   " Operations on surrounding characters.
+Plug 'SirVer/ultisnips'                                     " Snippets Plugin.
+Plug 'honza/vim-snippets'                                   " Snippets for Utilsnips
 
 " =========================================
 " Language specific plugins:
@@ -558,6 +560,21 @@ let g:vimwiki_list = [{'path': '~/.vimwiki/',
                       \ 'syntax': 'markdown', 'ext': '.md'}]
 let g:vimwiki_map_prefix = '<Leader>n'
 
+" =========================================
+" Utilsnips:
+" =========================================
+" Trigger configuration. You need to change this to something other than <tab> if you use one of the following:
+" - https://github.com/Valloric/YouCompleteMe
+" - https://github.com/nvim-lua/completion-nvim
+let g:UltiSnipsExpandTrigger="<C-l>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+let g:UltiSnipsEditSplit="horizontal"
+map <leader>ue :UltiSnipsEdit<CR>
+
+let g:UltiSnipsSnippetDirectories=[data_dir . "/UltiSnips"]
+
 "=========================================
 " Custom:
 "=========================================
+
