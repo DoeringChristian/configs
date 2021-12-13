@@ -297,6 +297,7 @@ nnoremap <leader><s-tab> :Rgnf<CR>
 nnoremap <leader>rg :Rgnf<CR>
 nnoremap <leader>ag :Agnf<CR>
 nnoremap <leader>s :Lines<CR>
+nnoremap <leader>sl :Snippets<CR>
 let g:fzf_layout = { 'down': '~40%' }
 command! -bang -nargs=* Rgnf
   \ call fzf#vim#grep(
