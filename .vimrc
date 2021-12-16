@@ -193,7 +193,7 @@ set number
 set relativenumber 
 syntax on
 set is hls
-set signcolumn=auto " Enable signcolumn to the left of linenumber
+set scl=yes 
 " Disabled due to lag
 "set cursorline
 "set cursorcolumn
@@ -449,7 +449,7 @@ set shortmess+=c
 " diagnostics appear/become resolved.
 if has("patch-8.1.1564")
     " Recently vim can merge signcolumn and number column into one
-    set signcolumn=number
+    set signcolumn=auto
 else
     set signcolumn=yes
 endif
