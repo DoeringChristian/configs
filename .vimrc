@@ -168,6 +168,8 @@ Plug 'neoclide/coc-html', {'do': 'yarn install --frozen-lockfile'}
 Plug 'neoclide/coc-css', {'do': 'yarn install --frozen-lockfile'}
 Plug 'fannheyward/coc-texlab', {'do': 'yarn install --frozen-lockfile'}
 Plug 'neoclide/coc-vimtex', {'do': 'yarn install --frozen-lockfile'}
+"Plug 'neoclide/coc-rls', {'do': 'yarn install --frozen-lockfile'}
+Plug 'fannheyward/coc-rust-analyzer', {'do': 'yarn install --frozen-lockfile'}
 
 call plug#end()
 
@@ -405,6 +407,25 @@ let g:fern#renderer#default#root_symbol      = '~ '
 "=========================================
 " Coc:
 "=========================================
+
+if exists('g:vscode')
+    :silent! CocDisable
+endif
+
+let g:coc_blacklist = []
+
+function! s:disable_coc_for_type()
+  if index(g:coc_blacklist, &filetype) == -1
+    :silent! CocEnable
+  else
+    :silent! CocDisable
+  endif
+endfunction
+
+augroup CocGroup
+ autocmd!
+ autocmd BufNew,BufEnter,BufAdd,BufCreate * call s:disable_coc_for_type()
+augroup end
 
 "in case VimPlug not working
 "let g:coc_global_extensions = ['coc-tsserver', 'coc-clangd', 'coc-cmake', 'coc-json', 'coc-python', 'coc-sh', 'coc-xml', 'coc-html', 'coc-css', 'coc-texlab']
