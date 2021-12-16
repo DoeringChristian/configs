@@ -422,6 +422,11 @@ function! s:disable_coc_for_type()
   endif
 endfunction
 
+function! s:coc_reload()
+    :CocCommand rust-analyzer.reload
+endfunction
+
+
 augroup CocGroup
  autocmd!
  autocmd BufNew,BufEnter,BufAdd,BufCreate * call s:disable_coc_for_type()
@@ -478,6 +483,7 @@ nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
+nmap <silent> <leader>r :CocCommand rust-analyzer.reload<CR>
 
 " Use K to show documentation in preview window.
 nnoremap <silent> K :call <SID>show_documentation()<CR>
