@@ -193,6 +193,7 @@ set number
 set relativenumber 
 syntax on
 set is hls
+set signcolumn=auto " Enable signcolumn to the left of linenumber
 " Disabled due to lag
 "set cursorline
 "set cursorcolumn
@@ -408,6 +409,12 @@ let g:fern#renderer#default#root_symbol      = '~ '
 " Coc:
 "=========================================
 
+let g:coc_user_config = {
+            \'diagnostic.enableSign': 'true',
+            \'diagnostic.enableHighlightLineNumber': 'true'
+            \}
+
+
 if exists('g:vscode')
     :silent! CocDisable
 endif
@@ -483,6 +490,8 @@ nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
+nmap <silent> <leader>a :CocAction<CR>
+vmap <silent> <leader>a :CocAction<CR>
 nmap <silent> <leader>r :CocCommand rust-analyzer.reload<CR>
 
 " Use K to show documentation in preview window.
