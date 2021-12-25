@@ -189,6 +189,7 @@ set softtabstop=4
 set autoindent
 set smartindent
 set expandtab
+filetype plugin indent on
 set number 
 set relativenumber 
 syntax on
