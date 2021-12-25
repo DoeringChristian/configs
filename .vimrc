@@ -411,7 +411,14 @@ let g:fern#renderer#default#root_symbol      = '~ '
 
 let g:coc_user_config = {
             \'diagnostic.enableSign': 'true',
-            \'diagnostic.enableHighlightLineNumber': 'true'
+            \'diagnostic.enableHighlightLineNumber': 'true',
+            \'languageserver': {
+                \"godot": {
+                    \"host": "127.0.0.1",
+                    \"filetypes": ["gd", "gdscript3"],
+                    \"port": 6008,
+                    \},
+                    \},
             \}
 
 
