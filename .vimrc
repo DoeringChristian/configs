@@ -485,8 +485,8 @@ endif
 
 " Make <CR> auto-select the first completion item and notify coc.nvim to
 " format on enter, <cr> could be remapped by other vim plugin
-"inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
-"                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 " Use `[g` and `]g` to navigate diagnostics
 " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
@@ -498,9 +498,43 @@ nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
+
 nmap <silent> <leader>a :CocAction<CR>
 vmap <silent> <leader>a :CocAction<CR>
-nmap <silent> <leader>r :CocCommand rust-analyzer.reload<CR>
+"nmap <silent> <leader>db :
+nmap <silent> <leader>cfm: :Format<CR>
+vmap <silent> <leader>fm: <Plug>(coc-format-selected)
+
+" Language Specific: 
+
+augroup coc_rust
+    autocmd!
+    autocmd FileType rust nmap <silent> <leader>rl :CocCommand rust-analyzer.reload<CR>
+    autocmd FileType rust nmap <silent> <leader>db :CocCommand rust-analyzer.debug<CR>
+    autocmd FileType rust nmap <silent> <leader>m :CocCommand rust-analyzer.expandMacro<CR>
+
+    " Commands with r prefix: 
+    autocmd FileType rust nmap <silent> <leader>rr :CocCommand rust-analyzer.run<CR>
+    autocmd FileType rust nmap <silent> <leader>ras :CocCommand rust-analyzer.analyzerStatus<CR>
+    autocmd FileType rust nmap <silent> <leader>rem :CocCommand rust-analyzer.expandMacro<CR>
+    autocmd FileType rust nmap <silent> <leader>ree :CocCommand rust-analyzer.explainError<CR>
+    autocmd FileType rust nmap <silent> <leader>rjl :CocCommand rust-analyzer.joinLines<CR>
+    autocmd FileType rust nmap <silent> <leader>rmu :CocCommand rust-analyzer.moveItemUp<CR>
+    autocmd FileType rust nmap <silent> <leader>rmd :CocCommand rust-analyzer.moveItemUp<CR>
+    autocmd FileType rust nmap <silent> <leader>rod :CocCommand rust-analyzer.openDocs<CR>
+    autocmd FileType rust nmap <silent> <leader>rpm :CocCommand rust-analyzer.parentModule<CR>
+    autocmd FileType rust nmap <silent> <leader>rpT :CocCommand rust-analyzer.peekTests<CR>
+
+    " Search and replace
+    autocmd FileType rust nmap <silent> <leader>rsr :CocCommand rust-analyzer.ssr<CR>
+    autocmd FileType rust nmap <silent> <leader>r/ :CocCommand rust-analyzer.ssr<CR> 
+    autocmd FileType rust nmap <silent> <leader>rst :CocCommand rust-analyzer.syntaxTree<CR>
+    autocmd FileType rust nmap <silent> <leader>rtih :CocCommand rust-analyzer.toggleInlayHints<CR>
+    autocmd FileType rust nmap <silent> <leader>rhir :CocCommand rust-analyzer.viewHir<CR>
+    autocmd FileType rust nmap <silent> <leader>rvg :CocCommand rust-analyzer.viewCrateGraph<CR>
+    autocmd FileType rust nmap <silent> <leader>rvG :CocCommand rust-analyzer.viewFullCrateGraph<CR>
+augroup END
+
 
 " Use K to show documentation in preview window.
 nnoremap <silent> K :call <SID>show_documentation()<CR>
@@ -520,11 +554,13 @@ autocmd CursorHold * silent call CocActionAsync('highlight')
 
 " Symbol renaming.
 nmap <leader>rn <Plug>(coc-rename)
+" Symbol refactoring
+nmap <leader>rf <Plug>(coc-refactor)
 
 
 " Formatting selected code.
 xmap <leader>f  <Plug>(coc-format-selected)
-nmap <leader>f  <Plug>(coc-format-selected)
+"nmap <leader>f  <Plug>(coc-format-selected)
 
 augroup mygroup
     autocmd!
