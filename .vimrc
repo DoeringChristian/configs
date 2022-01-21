@@ -91,6 +91,7 @@ Plug 'severin-lemaignan/vim-minimap'                        " Adds minimap.
 Plug 'vim-airline/vim-airline'                              " Adds status bar at the bottom.
 Plug 'airblade/vim-gitgutter'                               " Git integration.
 Plug 'romainl/vim-cool'                                     " Removes highlights after search.
+Plug 'DingDean/wgsl.vim'                                    " Adds highlighting for wgsl
 
 " =========================================
 " Navigation Plugins:
