@@ -113,6 +113,7 @@ Plug 'sgur/ctrlp-extensions.vim'                            " Integrates CtrlP w
 Plug 'vim-scripts/YankRing.vim'                             " Keeps yank history.
 Plug 'vimwiki/vimwiki'                                      " Wiki in vim (<leader>nt)
 Plug 'tpope/vim-fugitive'                                   " Git integration
+Plug 'embear/vim-localvimrc'                                " Local .vimrc file
 "Plug 'svermeulen/vim-yoink'
 
 " =========================================
@@ -169,6 +170,7 @@ Plug 'neoclide/coc-html', {'do': 'yarn install --frozen-lockfile'}
 Plug 'neoclide/coc-css', {'do': 'yarn install --frozen-lockfile'}
 Plug 'fannheyward/coc-texlab', {'do': 'yarn install --frozen-lockfile'}
 Plug 'neoclide/coc-vimtex', {'do': 'yarn install --frozen-lockfile'}
+Plug 'Eric-Song-Nop/coc-glslx', {'do': 'yarn install --frozen-lockfile'}
 "Plug 'neoclide/coc-rls', {'do': 'yarn install --frozen-lockfile'}
 Plug 'fannheyward/coc-rust-analyzer', {'do': 'yarn install --frozen-lockfile'}
 
@@ -657,6 +659,11 @@ map <leader>ue :UltiSnipsEdit<CR>
 let g:UltiSnipsSnippetDirectories=[data_dir . "/UltiSnips"]
 
 "=========================================
+" Local Vimrc:
+"=========================================
+
+"=========================================
 " Custom:
 "=========================================
+
 
