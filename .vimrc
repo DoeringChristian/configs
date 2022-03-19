@@ -298,6 +298,29 @@ endfunction
 autocmd! VimEnter * call s:vim_init()
 
 "=========================================
+" Neovide:
+"=========================================
+if exists('g:neovide')
+    set guifont=Monospace:h10
+
+    " Remap Ctrl+ and Ctrl- to increace/decreace font size
+    nnoremap <C-+> :silent! let &guifont = substitute(
+                \ &guifont, 
+                \ ':h\zs\d\+',
+                \ '\=eval(submatch(0)+1)',
+                \ '')<CR>
+    nnoremap <C--> :silent! let &guifont = substitute(
+                \ &guifont, 
+                \ ':h\zs\d\+',
+                \ '\=eval(submatch(0)-1)',
+                \ '')<CR>
+    let g:neovide_remember_window_size = v:true
+    " Disable Animation of Cursor
+    let g:neovide_cursor_animation_length=0.0
+    let g:neovide_cursor_trail_length=0.0
+endif
+
+"=========================================
 " FZF:
 "=========================================
 " <c-t>: tab_split,
