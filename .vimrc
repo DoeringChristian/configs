@@ -126,7 +126,11 @@ Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': 
 " =========================================
 " Motion Plugins:
 " =========================================
-Plug 'easymotion/vim-easymotion'                            " Adds easy shortcuts.
+if has("nvim")
+    Plug 'phaazon/hop.nvim'                                  " Adds easy shortcuts for NVIM.
+else
+    Plug 'easymotion/vim-easymotion'                         " Adds easy shortcuts for VIM.
+endif
 "Plug 'pechorin/any-jump.vim'                                " Jump to definitions
 " Plug 'DoeringChristian/MoVim'
 
@@ -279,6 +283,7 @@ else " no gui
 endif
 
 "Insert line with enter
+"Not working in some Terminal Emulators
 noremap <Enter> o<ESC>
 noremap <S-Enter> O<ESC>
 
@@ -446,8 +451,8 @@ endfunction
 
 
 augroup CocGroup
- autocmd!
- autocmd BufNew,BufEnter,BufAdd,BufCreate * call s:disable_coc_for_type()
+    autocmd!
+    autocmd BufNew,BufEnter,BufAdd,BufCreate * call s:disable_coc_for_type()
 augroup end
 
 "in case VimPlug not working
@@ -488,8 +493,9 @@ endif
 
 " Make <CR> auto-select the first completion item and notify coc.nvim to
 " format on enter, <cr> could be remapped by other vim plugin
-inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
-                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+" Removed for convenience
+"inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
+"                             \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 " Use `[g` and `]g` to navigate diagnostics
 " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
@@ -564,6 +570,8 @@ nmap <leader>rf <Plug>(coc-refactor)
 " Formatting selected code.
 xmap <leader>f  <Plug>(coc-format-selected)
 "nmap <leader>f  <Plug>(coc-format-selected)
+" Format whole buffer.
+nmap <silent> <leader>F :Format<CR>
 
 augroup mygroup
     autocmd!
@@ -599,6 +607,29 @@ xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 
 "=========================================
+" Easymotion/Hop:
+"=========================================
+" Use Hop in NVIM and Easymotion in VIM.
+if has("nvim")
+"=========================================
+" Hop:
+"=========================================
+
+lua << EOF
+require'hop'.setup()
+EOF
+lua require'hop'.setup{ keys = 'wertzuiopghyxcvbnmalskdjf', extend_visual = true }
+
+map f <cmd>HopChar1<CR>
+nmap <leader>f <cmd>HopChar1MW<CR>
+map <leader>w <cmd>HopWord<CR>
+map <leader>b <cmd>HopWordBC<CR>
+map <leader>j <cmd>HopLineAC<CR>
+map <leader>k <cmd>HopLineBC<CR>
+" there is no equivalent to easymotion-bd-e
+
+else
+"=========================================
 " Easymotion:
 "=========================================
 let g:yankring_zap_keys = ''
@@ -615,6 +646,7 @@ let g:EasyMotion_smartcase = 1
 let g:EasyMotion_startofline = 0 " keep cursor column when JK motion
 let g:EasyMotion_keys =  "wertzuiopghyxcvbnmalskdjf"
 "let g:EasyMotion_keys = "qwertzuiopyxcvbnmghalskdjf"
+endif
 
 "=========================================
 " Polyglot:
