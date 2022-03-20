@@ -144,7 +144,7 @@ Plug 'vim-scripts/CmdlineComplete'                          " Allows completion 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}             " Adds LSP integration.
 Plug 'Krasjet/auto.pairs'                                   " Autopairs for brackets etc.
 Plug 'tpope/vim-surround'                                   " Operations on surrounding characters.
-Plug 'SirVer/ultisnips'                                     " Snippets Plugin.
+if has('python3') | Plug 'SirVer/ultisnips' | endif         " Snippets Plugin.
 Plug 'honza/vim-snippets'                                   " Snippets for Utilsnips
 
 " =========================================
