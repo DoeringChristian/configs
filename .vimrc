@@ -107,7 +107,7 @@ Plug 'lambdalisue/fern-hijack.vim'
 " =========================================
 " Utility Plugins:
 " =========================================
-Plug 'puremourning/vimspector'                              " Adds debugger to vim.
+if has('python3') | Plug 'puremourning/vimspector' | endif  " Adds debugger to vim. Only install if python3 is enabled.
 Plug 'tpope/vim-dispatch'                                   " Run makefiles.
 Plug 'sgur/ctrlp-extensions.vim'                            " Integrates CtrlP with YankRing.
 Plug 'vim-scripts/YankRing.vim'                             " Keeps yank history.
@@ -121,7 +121,8 @@ Plug 'embear/vim-localvimrc'                                " Local .vimrc file
 " =========================================
 Plug 'dhruvasagar/vim-table-mode'                           " Markdown table auto alignment.
                                                             " Adds markdown preview for vim.
-Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']} 
+Plug 'iamcco/markdown-preview.nvim', 
+            \{ 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']} 
 
 " =========================================
 " Motion Plugins:
