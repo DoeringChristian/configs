@@ -517,9 +517,15 @@ endif
 
 " Make <CR> auto-select the first completion item and notify coc.nvim to
 " format on enter, <cr> could be remapped by other vim plugin
-" Removed for convenience
+"
+" Enable for auto completion on Enter (not convenient since linebreaks are
+" also completed)
 "inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
 "                             \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+" Added test weather the item has been selected instead of the popup menu
+" being visible.
+inoremap <silent><expr> <cr> coc#rpc#request('hasSelected', []) == v:true ? coc#_select_confirm()
+                             \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 " Use `[g` and `]g` to navigate diagnostics
 " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
