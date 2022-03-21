@@ -298,6 +298,8 @@ endfunction
 
 autocmd! VimEnter * call s:vim_init()
 
+nnoremap <M-Tab> :<CR>
+
 "=========================================
 " Neovide:
 "=========================================
