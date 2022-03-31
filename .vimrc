@@ -111,7 +111,7 @@ if has('python3') | Plug 'puremourning/vimspector' | endif  " Adds debugger to v
 Plug 'tpope/vim-dispatch'                                   " Run makefiles.
 Plug 'sgur/ctrlp-extensions.vim'                            " Integrates CtrlP with YankRing.
 Plug 'vim-scripts/YankRing.vim'                             " Keeps yank history.
-Plug 'vimwiki/vimwiki'                                      " Wiki in vim (<leader>nt)
+"Plug 'vimwiki/vimwiki'                                      " Wiki in vim (<leader>nt)
 Plug 'tpope/vim-fugitive'                                   " Git integration
 Plug 'embear/vim-localvimrc'                                " Local .vimrc file
 "Plug 'svermeulen/vim-yoink'
@@ -180,6 +180,7 @@ Plug 'neoclide/coc-vimtex', {'do': 'yarn install --frozen-lockfile'}
 Plug 'Eric-Song-Nop/coc-glslx', {'do': 'yarn install --frozen-lockfile'}
 "Plug 'neoclide/coc-rls', {'do': 'yarn install --frozen-lockfile'}
 Plug 'fannheyward/coc-rust-analyzer', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc-sources', {'do': 'yarn install --frozen-lockfile'}
 
 call plug#end()
 
@@ -214,6 +215,14 @@ let mapleader = " "
 let g:mapleader = " "
 map <Space> <leader>
 let maplocalleader = "  "
+
+set foldmethod=syntax
+if(has("nvim"))
+    set foldcolumn=auto
+else
+    set foldcolumn=2
+endif
+set signcolumn=yes
 
 let undo_dir = data_dir . "/undodir"
 if(!isdirectory(undo_dir))
@@ -286,9 +295,16 @@ else " no gui
   endif
 endif
 
-"Insert line with enter
-"Not working in some Terminal Emulators
-noremap <Enter> o<ESC>
+function! Enter()
+    if foldlevel(line('.')) > foldlevel(line('.')-1)
+        return "za"
+    else
+        return "o\<ESC>"
+    endif
+endfunction
+
+" Insert line with Enter but only if not on foldline.
+noremap <silent><expr> <Enter> Enter()
 noremap <S-Enter> O<ESC>
 
 " Init function
@@ -487,15 +503,6 @@ augroup end
 
 " Don't pass messages to |ins-completion-menu|.
 set shortmess+=c
-
-" Always show the signcolumn, otherwise it would shift the text each time
-" diagnostics appear/become resolved.
-if has("patch-8.1.1564")
-    " Recently vim can merge signcolumn and number column into one
-    set signcolumn=auto
-else
-    set signcolumn=yes
-endif
 
 " Use tab for trigger completion with characters ahead and navigate.
 " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
@@ -710,7 +717,7 @@ let g:vimwiki_list = [{'path': '~/.vimwiki/',
 let g:vimwiki_map_prefix = '<Leader>n'
 
 augroup pandoc_syntax
-  autocmd! FileType vimwiki set syntax=markdown.pandoc
+    autocmd! FileType vimwiki set syntax=markdown.pandoc
 augroup END
 
 "=========================================
@@ -719,6 +726,12 @@ augroup END
 let g:pandoc#syntax#codeblocks#embeds#langs = ["rust", "c", "python", "ruby", "literatehaskell=lhaskell", "bash=sh"]
 let g:pandoc#syntax#conceal#use = 1
 let g:pandoc#syntax#conceal#urls = 1
+
+augroup pandoc_syntax
+    autocmd! FileType pandoc inoremap <C-space> <C-n>
+    autocmd! FileType pandoc nmap gd <localleader>gl
+    autocmd! FileType pandoc nmap <leader># <localleader>#
+augroup END
 
 " =========================================
 " Utilsnips:
