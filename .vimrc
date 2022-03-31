@@ -123,6 +123,8 @@ Plug 'dhruvasagar/vim-table-mode'                           " Markdown table aut
                                                             " Adds markdown preview for vim.
 Plug 'iamcco/markdown-preview.nvim', 
             \{ 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']} 
+if has('python3') | Plug 'vim-pandoc/vim-pandoc' | endif    " Addes pandoc flafoured markdown.
+Plug 'vim-pandoc/vim-pandoc-syntax'
 
 " =========================================
 " Motion Plugins:
@@ -211,6 +213,7 @@ set noautochdir
 let mapleader = " "
 let g:mapleader = " "
 map <Space> <leader>
+let maplocalleader = "  "
 
 let undo_dir = data_dir . "/undodir"
 if(!isdirectory(undo_dir))
@@ -297,8 +300,6 @@ function! s:vim_init()
 endfunction
 
 autocmd! VimEnter * call s:vim_init()
-
-nnoremap <M-Tab> :<CR>
 
 "=========================================
 " Neovide:
@@ -707,6 +708,17 @@ let g:indentLine_color_term = 239
 let g:vimwiki_list = [{'path': '~/.vimwiki/',
                       \ 'syntax': 'markdown', 'ext': '.md'}]
 let g:vimwiki_map_prefix = '<Leader>n'
+
+augroup pandoc_syntax
+  autocmd! FileType vimwiki set syntax=markdown.pandoc
+augroup END
+
+"=========================================
+" Pandoc:
+"=========================================
+let g:pandoc#syntax#codeblocks#embeds#langs = ["rust", "c", "python", "ruby", "literatehaskell=lhaskell", "bash=sh"]
+let g:pandoc#syntax#conceal#use = 1
+let g:pandoc#syntax#conceal#urls = 1
 
 " =========================================
 " Utilsnips:
