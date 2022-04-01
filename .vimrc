@@ -216,12 +216,14 @@ let g:mapleader = " "
 map <Space> <leader>
 let maplocalleader = "  "
 
+" Folding:
 set foldmethod=syntax
 if(has("nvim"))
     set foldcolumn=auto
 else
     set foldcolumn=2
 endif
+
 set signcolumn=yes
 
 let undo_dir = data_dir . "/undodir"
@@ -296,7 +298,22 @@ else " no gui
 endif
 
 function! Enter()
-    if foldlevel(line('.')) > foldlevel(line('.')-1)
+    if foldclosed(line('.')) > -1
+        " IF:
+        " {} .
+        return "za"
+    elseif foldlevel(line('.')) > foldlevel(line('.')-1)
+        " IF:
+        " {
+        "   { .
+        "   }
+        " }
+        return "za"
+    elseif foldlevel(line('.')) == foldlevel(line('.')-1) && foldclosed(line('.')-1)
+        " IF:
+        " {}
+        " { .
+        " }
         return "za"
     else
         return "o\<ESC>"
@@ -306,6 +323,9 @@ endfunction
 " Insert line with Enter but only if not on foldline.
 noremap <silent><expr> <Enter> Enter()
 noremap <S-Enter> O<ESC>
+
+noremap <M-Enter> zA
+noremap <leader><Enter> zA
 
 " Init function
 function! s:vim_init()
