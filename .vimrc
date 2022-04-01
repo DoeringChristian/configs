@@ -309,7 +309,7 @@ function! Enter()
         "   }
         " }
         return "za"
-    elseif foldlevel(line('.')) == foldlevel(line('.')-1) && foldclosed(line('.')-1)
+    elseif foldlevel(line('.')) == foldlevel(line('.')-1) && foldclosed(line('.')-1) > -1
         " IF:
         " {}
         " { .
